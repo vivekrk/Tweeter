@@ -33,8 +33,8 @@ public class TwitterAccount extends Account {
 		return token.getAuthenticationURL();
 	}
 	
-	public List<Status> getHomeTimeline() throws TwitterException {
-		List<Status> statuses = getTwitterInstance().getHomeTimeline();
+	public List<Status> getPublicTimeline() throws TwitterException {
+		List<Status> statuses = getTwitterInstance().getPublicTimeline();
 		return statuses;
 	}
 }

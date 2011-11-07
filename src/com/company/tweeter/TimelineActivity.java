@@ -17,7 +17,6 @@ import android.widget.Toast;
 
 import com.company.tweeter.accountmanager.AccountManager;
 import com.company.tweeter.accountmanager.TwitterAccount;
-import com.company.tweeter.database.TweeterDbHelper;
 
 public class TimelineActivity extends Activity {
     /** Called when the activity is first created. */
@@ -87,12 +86,9 @@ public class TimelineActivity extends Activity {
     				initializeUI();
     				
     				try {
-    					TweeterDbHelper dbHelper = new TweeterDbHelper(TimelineActivity.this);
-						statuses = account.getHomeTimeline();
-						for (Status status : statuses) {
-							dbHelper.addStatus(status);
-						}
+						statuses = account.getPublicTimeline();
 					} catch (TwitterException e) {
+						// TODO Auto-generated catch block
 						Toast.makeText(getApplicationContext(), e.getErrorMessage(), Toast.LENGTH_LONG).show();
 					}
     			}
