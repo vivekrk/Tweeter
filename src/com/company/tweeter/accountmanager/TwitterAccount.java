@@ -6,6 +6,7 @@ import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
+import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
 
 import android.content.Context;
@@ -44,7 +45,7 @@ public class TwitterAccount extends Account {
 	
 	public boolean isUserLoggedIn(Context context) {
 		mPrefs = context.getSharedPreferences(Constants.PREFERENCES_NAME, Context.MODE_PRIVATE);
-		if(!mPrefs.contains(Constants.ACCESS_TOKEN)) {
+		if(mPrefs.contains(Constants.ACCESS_TOKEN)) {
 			return true;
 		}
 		else {
@@ -52,9 +53,14 @@ public class TwitterAccount extends Account {
 		}
 	}
 	
-	public void writeTokenToPrefs(String accessToken) {
+	public void writeTokenToPrefs(String accessToken, String accessTokenSecret) {
 		SharedPreferences.Editor editor = mPrefs.edit();
 		editor.putString(Constants.ACCESS_TOKEN, accessToken);
+		editor.putString(Constants.ACCESS_TOKEN_SECRET, accessTokenSecret);
 		editor.commit();
+	}
+	
+	public void setAccessToken(AccessToken accessToken) {
+		twitter.setOAuthAccessToken(accessToken);
 	}
 }

@@ -4,10 +4,12 @@ import java.util.List;
 
 import twitter4j.Status;
 import twitter4j.TwitterException;
+import twitter4j.auth.AccessToken;
 import android.app.Activity;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.CursorAdapter;
@@ -23,6 +25,8 @@ import com.company.tweeter.database.TweeterDbHelper;
 
 public class TimelineActivity extends Activity {
     /** Called when the activity is first created. */
+	
+	private static final String TAG = "TimelineActivity";
 	
 	private AccountManager manager;
 	private TwitterAccount account;
@@ -97,8 +101,13 @@ public class TimelineActivity extends Activity {
     			super.onPageFinished(view, url);
     			if(url.contains(Constants.CALLBACK_URL)) {
     				Uri uri = Uri.parse(url);
-    				String accessTokenString = uri.getQueryParameter(Constants.OAUTH_TOKEN_KEY);
-    				account.writeTokenToPrefs(accessTokenString);
+    				Toast.makeText(getApplicationContext(), url, Toast.LENGTH_LONG).show();
+    				Log.d(TAG, url);
+    				String oAuthTokenString = uri.getQueryParameter(Constants.OAUTH_TOKEN_KEY);
+    				String oAuthTokenSecretString = uri.getQueryParameter(Constants.OAUTH_TOKEN_SECRET_KEY);
+    				AccessToken token = new AccessToken(oAuthTokenString, oAuthTokenSecretString);
+    				account.writeTokenToPrefs(oAuthTokenString, oAuthTokenSecretString);
+    				account.setAccessToken(token);
     				
     				setContentView(R.layout.timeline_layout);
     				initializeUI();

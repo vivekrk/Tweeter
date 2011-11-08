@@ -7,8 +7,10 @@ public class Constants {
 	
 	public static final String PREFERENCES_NAME = "Tweeter"; 
 	public static final String ACCESS_TOKEN = "accesstoken";
+	public static final String ACCESS_TOKEN_SECRET = "accesstokensecret";
 	
 	public static final String OAUTH_TOKEN_KEY = "oauth_token";
+	public static final String OAUTH_TOKEN_SECRET_KEY = "oauth_verifier";
 	
 	public static final String DATABASE_NAME = "Tweeter";
 	public static final int DB_VERSION = 1;
