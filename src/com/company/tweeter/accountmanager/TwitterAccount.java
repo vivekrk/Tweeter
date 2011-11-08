@@ -8,10 +8,14 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.auth.RequestToken;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import com.company.tweeter.Constants;
 
 public class TwitterAccount extends Account {
 	private Twitter twitter;
+	private SharedPreferences mPrefs;
 	
 	public TwitterAccount() {
 		twitter = getTwitterInstance();
@@ -33,8 +37,24 @@ public class TwitterAccount extends Account {
 		return token.getAuthenticationURL();
 	}
 	
-	public List<Status> getPublicTimeline() throws TwitterException {
-		List<Status> statuses = getTwitterInstance().getPublicTimeline();
+	public List<Status> getHomeTimeline() throws TwitterException {
+		List<Status> statuses = getTwitterInstance().getHomeTimeline();
 		return statuses;
+	}
+	
+	public boolean isUserLoggedIn(Context context) {
+		mPrefs = context.getSharedPreferences(Constants.PREFERENCES_NAME, Context.MODE_PRIVATE);
+		if(!mPrefs.contains(Constants.ACCESS_TOKEN)) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
+	public void writeTokenToPrefs(String accessToken) {
+		SharedPreferences.Editor editor = mPrefs.edit();
+		editor.putString(Constants.ACCESS_TOKEN, accessToken);
+		editor.commit();
 	}
 }

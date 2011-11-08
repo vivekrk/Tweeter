@@ -17,11 +17,10 @@ import android.widget.Toast;
 
 import com.company.tweeter.accountmanager.AccountManager;
 import com.company.tweeter.accountmanager.TwitterAccount;
+import com.company.tweeter.database.TweeterDbHelper;
 
 public class TimelineActivity extends Activity {
     /** Called when the activity is first created. */
-	
-	private SharedPreferences mPrefs;
 	
 	private AccountManager manager;
 	private TwitterAccount account;
@@ -39,22 +38,15 @@ public class TimelineActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        mPrefs = getSharedPreferences(Constants.PREFERENCES_NAME, MODE_PRIVATE);
-        
         manager = AccountManager.getInstance();
         account = manager.getAccount();
         
-        if(!mPrefs.contains(Constants.ACCESS_TOKEN)) {
-        	getAccessTokenForTwitterAccount();
+        if(!account.isUserLoggedIn(this)) {
+        	login();
         } else {
         	setContentView(R.layout.timeline_layout);
         	initializeUI();
-        	populateTimelineData(statuses);
         }
-    }
-    
-    private void populateTimelineData(List<Status> statusList) {
-    	
     }
     
     private void initializeUI() {
@@ -66,8 +58,7 @@ public class TimelineActivity extends Activity {
     	retweetedBy = (TextView) findViewById(R.id.retweetedBy);
     }
     
-    private void getAccessTokenForTwitterAccount() {
-
+    private void login() {
     	WebView webView = new WebView(this);
     	webView.getSettings().setJavaScriptEnabled(true);
     	webView.setWebViewClient(new WebViewClient() {
@@ -77,18 +68,18 @@ public class TimelineActivity extends Activity {
     			if(url.contains(Constants.CALLBACK_URL)) {
     				Uri uri = Uri.parse(url);
     				String accessTokenString = uri.getQueryParameter(Constants.OAUTH_TOKEN_KEY);
-    				
-    				SharedPreferences.Editor editor = mPrefs.edit();
-    				editor.putString(Constants.ACCESS_TOKEN, accessTokenString);
-    				editor.commit();
+    				account.writeTokenToPrefs(accessTokenString);
     				
     				setContentView(R.layout.timeline_layout);
     				initializeUI();
     				
     				try {
-						statuses = account.getPublicTimeline();
+    					TweeterDbHelper dbHelper = new TweeterDbHelper(TimelineActivity.this);
+						statuses = account.getHomeTimeline();
+						for (Status status : statuses) {
+							dbHelper.addStatus(status);
+						}
 					} catch (TwitterException e) {
-						// TODO Auto-generated catch block
 						Toast.makeText(getApplicationContext(), e.getErrorMessage(), Toast.LENGTH_LONG).show();
 					}
     			}
@@ -107,6 +98,5 @@ public class TimelineActivity extends Activity {
 			Toast.makeText(getApplicationContext(), e.getErrorMessage(), Toast.LENGTH_LONG).show();
 		}
     	setContentView(webView);
-    
     }
 }
