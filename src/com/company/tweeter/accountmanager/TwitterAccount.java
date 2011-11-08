@@ -38,7 +38,7 @@ public class TwitterAccount extends Account {
 	}
 	
 	public List<Status> getHomeTimeline() throws TwitterException {
-		List<Status> statuses = getTwitterInstance().getHomeTimeline();
+		List<Status> statuses = twitter.getHomeTimeline();
 		return statuses;
 	}
 	

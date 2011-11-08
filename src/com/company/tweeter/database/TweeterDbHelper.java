@@ -5,6 +5,7 @@ import java.util.Date;
 import twitter4j.Status;
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -29,8 +30,14 @@ public class TweeterDbHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		// TODO Auto-generated method stub
-
+		db.execSQL("DROP TABLE IF EXISTS tasks");
+		onCreate(db);
+	}
+	
+	public Cursor query(String tableName, String[] projection, String selection) {
+		SQLiteDatabase db = getReadableDatabase();
+		Cursor data = db.query(tableName, projection, selection, null, null, null, null);
+		return data;
 	}
 	
 	public void addStatus(Status status) {

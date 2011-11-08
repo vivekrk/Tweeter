@@ -12,6 +12,7 @@ public class Constants {
 	
 	public static final String DATABASE_NAME = "Tweeter";
 	public static final int DB_VERSION = 1;
+	public static final String TABLE_NAME = "timeline";
 	
 	public static final String CREATED_TIME = "time";
 	public static final String USERNAME = "username";

@@ -5,13 +5,15 @@ import java.util.List;
 import twitter4j.Status;
 import twitter4j.TwitterException;
 import android.app.Activity;
-import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +26,10 @@ public class TimelineActivity extends Activity {
 	
 	private AccountManager manager;
 	private TwitterAccount account;
+	
+	private TweeterDbHelper dbHelper;
+	
+	private CursorAdapter adapter;
 	
 	private List<Status> statuses;
 	
@@ -38,6 +44,9 @@ public class TimelineActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
+        dbHelper = new TweeterDbHelper(this);
+        dbHelper.getWritableDatabase();
+        
         manager = AccountManager.getInstance();
         account = manager.getAccount();
         
@@ -46,10 +55,31 @@ public class TimelineActivity extends Activity {
         } else {
         	setContentView(R.layout.timeline_layout);
         	initializeUI();
+        	getStatuses();
+        	updateTimelineUI();
         }
     }
     
-    private void initializeUI() {
+	private void updateTimelineUI() {
+		Cursor data = dbHelper.query(Constants.TABLE_NAME, null, null);
+		adapter = new SimpleCursorAdapter(this, R.layout.tweet_row, data, 
+				new String[] {Constants.CREATED_TIME, Constants.USERNAME, Constants.PROFILE_IMAGE, Constants.TWEET}, 
+				new int[] {R.id.time, R.id.username, R.id.userImageView, R.id.tweetMessage});
+		timelineList.setAdapter(adapter);
+	}
+
+	private void getStatuses() {
+		try {
+			statuses = account.getHomeTimeline();
+			for (Status status : statuses) {
+				dbHelper.addStatus(status);
+			}
+		} catch (TwitterException e) {
+			Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+		}
+	}
+
+	private void initializeUI() {
     	timelineList = (ListView) findViewById(R.id.tweetList);
     	userImageView = (ImageView) findViewById(R.id.userImageView);
     	username = (TextView) findViewById(R.id.username);
@@ -72,16 +102,8 @@ public class TimelineActivity extends Activity {
     				
     				setContentView(R.layout.timeline_layout);
     				initializeUI();
-    				
-    				try {
-    					TweeterDbHelper dbHelper = new TweeterDbHelper(TimelineActivity.this);
-						statuses = account.getHomeTimeline();
-						for (Status status : statuses) {
-							dbHelper.addStatus(status);
-						}
-					} catch (TwitterException e) {
-						Toast.makeText(getApplicationContext(), e.getErrorMessage(), Toast.LENGTH_LONG).show();
-					}
+    				getStatuses();
+    				updateTimelineUI();
     			}
     		}
     		
