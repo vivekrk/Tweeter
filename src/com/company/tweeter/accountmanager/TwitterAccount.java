@@ -67,10 +67,12 @@ public class TwitterAccount extends Account {
 		return aToken;
 	}
 	
-	public void writeTokenToPrefs(String accessToken, String accessTokenSecret) {
+	public void writeTokenToPrefs(AccessToken accessToken) {
 		SharedPreferences.Editor editor = mPrefs.edit();
-		editor.putString(Constants.ACCESS_TOKEN, accessToken);
-		editor.putString(Constants.ACCESS_TOKEN_SECRET, accessTokenSecret);
+		String token = accessToken.getToken();
+		String tokenSecret = accessToken.getTokenSecret();
+		editor.putString(Constants.ACCESS_TOKEN, token);
+		editor.putString(Constants.ACCESS_TOKEN_SECRET, tokenSecret);
 		editor.commit();
 	}
 	

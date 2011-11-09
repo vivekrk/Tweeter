@@ -13,8 +13,8 @@ import com.company.tweeter.Constants;
 
 public class TweeterDbHelper extends SQLiteOpenHelper {
 
-	private static final String TABLE_NAME = "timeline";
-	private static final String CREATE_DATABASE = "CREATE TABLE timeline (_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+//	private static final String TABLE_NAME = "twitterdata";
+	private static final String CREATE_DATABASE = "CREATE TABLE twitterdata (_id INTEGER PRIMARY KEY, "
 			+ " time TEXT, username TEXT, image TEXT, tweet TEXT);";
 	
 	public TweeterDbHelper(Context context) {
@@ -30,7 +30,7 @@ public class TweeterDbHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		db.execSQL("DROP TABLE IF EXISTS tasks");
+		db.execSQL("DROP TABLE IF EXISTS twitterdata");
 		onCreate(db);
 	}
 	
@@ -42,18 +42,20 @@ public class TweeterDbHelper extends SQLiteOpenHelper {
 	
 	public void addStatus(Status status) {
 		Date createdDate = status.getCreatedAt();
-		String username = status.getUser().getName();
+		String username = status.getUser().getScreenName();
 		String imageUrl = status.getUser().getProfileImageURL().toString();
 		String tweet = status.getText();
+		long statusID = status.getId();
 		
 		SQLiteDatabase db = getWritableDatabase();
 		ContentValues cv = new ContentValues();
 		
+		cv.put(Constants.STATUS_ID, statusID);
 		cv.put(Constants.CREATED_TIME, createdDate.toString());
 		cv.put(Constants.USERNAME, username);
 		cv.put(Constants.PROFILE_IMAGE, imageUrl);
 		cv.put(Constants.TWEET, tweet);
 		
-		db.insert(TABLE_NAME, Constants.TWEET, cv);
+		db.insert(Constants.TABLE_NAME, Constants.TWEET, cv);
 	}
 }

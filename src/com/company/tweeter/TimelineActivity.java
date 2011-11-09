@@ -1,5 +1,7 @@
 package com.company.tweeter;
 
+import java.net.URI;
+import java.net.URL;
 import java.util.List;
 
 import twitter4j.Status;
@@ -7,12 +9,17 @@ import twitter4j.TwitterException;
 import twitter4j.auth.AccessToken;
 import android.app.Activity;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.CursorAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -23,7 +30,7 @@ import com.company.tweeter.accountmanager.AccountManager;
 import com.company.tweeter.accountmanager.TwitterAccount;
 import com.company.tweeter.database.TweeterDbHelper;
 
-public class TimelineActivity extends Activity {
+public class TimelineActivity extends Activity implements OnClickListener, SimpleCursorAdapter.ViewBinder {
     /** Called when the activity is first created. */
 	
 	private AccountManager manager;
@@ -31,7 +38,7 @@ public class TimelineActivity extends Activity {
 	
 	private TweeterDbHelper dbHelper;
 	
-	private CursorAdapter adapter;
+	private SimpleCursorAdapter adapter;
 	
 	private List<Status> statuses;
 	
@@ -41,6 +48,8 @@ public class TimelineActivity extends Activity {
 	private TextView time;
 	private TextView tweetText;
 	private TextView retweetedBy;
+	
+	private ImageButton showTweets;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -57,6 +66,7 @@ public class TimelineActivity extends Activity {
         } else {
         	setContentView(R.layout.timeline_layout);
         	initializeUI();
+        	showTweets.setOnClickListener(this);
         	getStatuses();
         	updateTimelineUI();
         }
@@ -64,9 +74,30 @@ public class TimelineActivity extends Activity {
     
 	private void updateTimelineUI() {
 		Cursor data = dbHelper.query(Constants.TABLE_NAME, null, null);
+		data.moveToFirst();
 		adapter = new SimpleCursorAdapter(this, R.layout.tweet_row, data, 
 				new String[] {Constants.CREATED_TIME, Constants.USERNAME, Constants.PROFILE_IMAGE, Constants.TWEET}, 
 				new int[] {R.id.time, R.id.username, R.id.userImageView, R.id.tweetMessage});
+		
+		SimpleCursorAdapter.ViewBinder viewBinder = new SimpleCursorAdapter.ViewBinder() {
+			
+			public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+				String imageUrl = cursor.getString(columnIndex);
+				Bitmap bmp = BitmapFactory.decodeFile(imageUrl);
+				if (view instanceof ImageView) {
+//					((ImageView) view).setImageURI(imageUri);
+					Log.d(Constants.TAG, "view is an instance of ImageView");
+				}
+				return true;
+			}
+		};
+		
+		int index = data.getColumnIndex(Constants.PROFILE_IMAGE);
+		Log.d(Constants.TAG, "" + index);
+		viewBinder.setViewValue(userImageView, data, index);
+		
+		adapter.setViewBinder(viewBinder);
+		
 		timelineList.setAdapter(adapter);
 	}
 
@@ -88,6 +119,8 @@ public class TimelineActivity extends Activity {
     	time = (TextView) findViewById(R.id.time);
     	tweetText = (TextView) findViewById(R.id.tweetMessage);
     	retweetedBy = (TextView) findViewById(R.id.retweetedBy);
+    	
+    	showTweets = (ImageButton) findViewById(R.id.showTweets);
     }
     
     private void login() {
@@ -108,8 +141,8 @@ public class TimelineActivity extends Activity {
 						token = account.getAccessToken(oAuthVerifier);
 						Log.d(Constants.TAG, token.getToken());
 						account.setAccessToken(token);
+						account.setAccessToken(token);
 					} catch (TwitterException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
     				
@@ -127,11 +160,27 @@ public class TimelineActivity extends Activity {
     			Toast.makeText(getApplicationContext(), description, Toast.LENGTH_LONG).show();
     		}
     	});
+    	
     	try {
 			webView.loadUrl(account.getAuthenticationUrl());
 		} catch (TwitterException e) {
 			Toast.makeText(getApplicationContext(), e.getErrorMessage(), Toast.LENGTH_LONG).show();
+		} catch (Exception e) {
+			// TODO: handle exception
+			Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
 		}
     	setContentView(webView);
     }
+
+	public void onClick(View v) {
+		getStatuses();
+    	updateTimelineUI();
+	}
+
+	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+		String imageUrlString = cursor.getString(columnIndex);
+		Bitmap bmp = BitmapFactory.decodeFile(imageUrlString);
+		userImageView.setImageBitmap(bmp);
+		return true;
+	}
 }
