@@ -1,6 +1,12 @@
 package com.company.tweeter;
 
-import java.net.URI;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
@@ -18,7 +24,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.CursorAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -72,6 +77,31 @@ public class TimelineActivity extends Activity implements OnClickListener, Simpl
         }
     }
     
+    private Bitmap saveImageFile(InputStream is, String path) {
+		try {
+			File file = new File(path);
+			if (!file.exists())
+				file.createNewFile();
+			FileOutputStream fo = new FileOutputStream(file);
+			byte[] buffer = new byte[1000];
+			int n = is.read(buffer, 0, 1000);
+			int size = n;
+			while (n > 0) {
+				fo.write(buffer, 0, n);
+				n = is.read(buffer, 0, 1000);
+				size += n;
+			}
+			Log.d("Downloading..", "total size: " + size);
+			Bitmap bmp = BitmapFactory.decodeFile(path);
+			return bmp;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+    
 	private void updateTimelineUI() {
 		Cursor data = dbHelper.query(Constants.TABLE_NAME, null, null);
 		data.moveToFirst();
@@ -82,8 +112,29 @@ public class TimelineActivity extends Activity implements OnClickListener, Simpl
 		SimpleCursorAdapter.ViewBinder viewBinder = new SimpleCursorAdapter.ViewBinder() {
 			
 			public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-				String imageUrl = cursor.getString(columnIndex);
-				Bitmap bmp = BitmapFactory.decodeFile(imageUrl);
+				String imageUrlString = cursor.getString(columnIndex);
+				String username = cursor.getString(cursor.getColumnIndex(Constants.USERNAME));
+				String path = getDir("images", MODE_PRIVATE).getAbsolutePath() + "/" + username + ".png";
+				Log.d(Constants.TAG, "username: " + username);
+				Log.d(Constants.TAG, "imageUrlString: " + imageUrlString);
+				Log.d(Constants.TAG, "path: " + path);
+				try {
+					URL imageUrl = new URL(imageUrlString);
+					HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
+					connection.connect();
+					
+					InputStream is = connection.getInputStream();
+					Bitmap bmp = saveImageFile(is, path);
+					userImageView.setImageBitmap(bmp);
+					
+				} catch (MalformedURLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} 
+				
 				if (view instanceof ImageView) {
 //					((ImageView) view).setImageURI(imageUri);
 					Log.d(Constants.TAG, "view is an instance of ImageView");
