@@ -11,12 +11,15 @@ import twitter4j.auth.RequestToken;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.company.tweeter.Constants;
 
 public class TwitterAccount extends Account {
 	private Twitter twitter;
 	private SharedPreferences mPrefs;
+	
+	private RequestToken requestToken = null;
 	
 	public TwitterAccount() {
 		twitter = getTwitterInstance();
@@ -29,8 +32,10 @@ public class TwitterAccount extends Account {
 	}
 	
 	public RequestToken getRequestToken() throws TwitterException {
-		RequestToken token = twitter.getOAuthRequestToken(Constants.CALLBACK_URL);
-		return token;
+		Log.d(Constants.TAG, "Before getOAuthRequestToken");
+		requestToken = twitter.getOAuthRequestToken(Constants.CALLBACK_URL);
+		Log.d(Constants.TAG, requestToken.getToken());
+		return requestToken;
 	}
 	
 	public String getAuthenticationUrl() throws TwitterException {
@@ -51,6 +56,15 @@ public class TwitterAccount extends Account {
 		else {
 			return false;
 		}
+	}
+	
+	public AccessToken getAccessToken(String oAuthVerifier) throws TwitterException {
+		Log.d(Constants.TAG, "getAccessToken start");
+		Log.d(Constants.TAG, requestToken.getToken());
+		AccessToken aToken = null;
+		aToken = twitter.getOAuthAccessToken(requestToken, oAuthVerifier);
+		Log.d(Constants.TAG, "after getOAuthAccessToken");
+		return aToken;
 	}
 	
 	public void writeTokenToPrefs(String accessToken, String accessTokenSecret) {

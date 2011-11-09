@@ -26,8 +26,6 @@ import com.company.tweeter.database.TweeterDbHelper;
 public class TimelineActivity extends Activity {
     /** Called when the activity is first created. */
 	
-	private static final String TAG = "TimelineActivity";
-	
 	private AccountManager manager;
 	private TwitterAccount account;
 	
@@ -102,12 +100,18 @@ public class TimelineActivity extends Activity {
     			if(url.contains(Constants.CALLBACK_URL)) {
     				Uri uri = Uri.parse(url);
     				Toast.makeText(getApplicationContext(), url, Toast.LENGTH_LONG).show();
-    				Log.d(TAG, url);
-    				String oAuthTokenString = uri.getQueryParameter(Constants.OAUTH_TOKEN_KEY);
-    				String oAuthTokenSecretString = uri.getQueryParameter(Constants.OAUTH_TOKEN_SECRET_KEY);
-    				AccessToken token = new AccessToken(oAuthTokenString, oAuthTokenSecretString);
-    				account.writeTokenToPrefs(oAuthTokenString, oAuthTokenSecretString);
-    				account.setAccessToken(token);
+//    				Log.d(Constants.TAG, url);
+    				
+    				String oAuthVerifier = uri.getQueryParameter(Constants.OAUTH_VERIFIER);
+    				AccessToken token;
+					try {
+						token = account.getAccessToken(oAuthVerifier);
+						Log.d(Constants.TAG, token.getToken());
+						account.setAccessToken(token);
+					} catch (TwitterException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
     				
     				setContentView(R.layout.timeline_layout);
     				initializeUI();
