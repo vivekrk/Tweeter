@@ -112,6 +112,7 @@ public class TimelineActivity extends Activity implements OnClickListener, Simpl
 		SimpleCursorAdapter.ViewBinder viewBinder = new SimpleCursorAdapter.ViewBinder() {
 			
 			public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+				Bitmap bmp = null;
 				String imageUrlString = cursor.getString(columnIndex);
 				String username = cursor.getString(cursor.getColumnIndex(Constants.USERNAME));
 				String path = getDir("images", MODE_PRIVATE).getAbsolutePath() + "/" + username + ".png";
@@ -124,8 +125,7 @@ public class TimelineActivity extends Activity implements OnClickListener, Simpl
 					connection.connect();
 					
 					InputStream is = connection.getInputStream();
-					Bitmap bmp = saveImageFile(is, path);
-					userImageView.setImageBitmap(bmp);
+					bmp = saveImageFile(is, path);
 					
 				} catch (MalformedURLException e) {
 					// TODO Auto-generated catch block
@@ -136,7 +136,7 @@ public class TimelineActivity extends Activity implements OnClickListener, Simpl
 				} 
 				
 				if (view instanceof ImageView) {
-//					((ImageView) view).setImageURI(imageUri);
+					((ImageView) view).setImageBitmap(bmp);
 					Log.d(Constants.TAG, "view is an instance of ImageView");
 				}
 				return true;
