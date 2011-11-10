@@ -28,14 +28,13 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.company.tweeter.accountmanager.AccountManager;
 import com.company.tweeter.accountmanager.TwitterAccount;
 import com.company.tweeter.database.TweeterDbHelper;
 
-public class TimelineActivity extends Activity implements OnClickListener, SimpleCursorAdapter.ViewBinder {
+public class TimelineActivity extends Activity {
     /** Called when the activity is first created. */
 	
 	private AccountManager manager;
@@ -49,12 +48,12 @@ public class TimelineActivity extends Activity implements OnClickListener, Simpl
 	
 	private ListView timelineList;
 	private ImageView userImageView;
-	private TextView username;
-	private TextView time;
-	private TextView tweetText;
-	private TextView retweetedBy;
+//	private TextView username;
+//	private TextView time;
+//	private TextView tweetText;
+//	private TextView retweetedBy;
 	
-	private ImageButton showTweets;
+//	private ImageButton showTweets;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,15 +64,21 @@ public class TimelineActivity extends Activity implements OnClickListener, Simpl
         
         manager = AccountManager.getInstance();
         account = manager.getAccount();
-        
-        if(!account.isUserLoggedIn(this)) {
-        	login();
-        } else {
+        Log.d(Constants.TAG, "Return value: " + account.isUserLoggedIn(this));
+        if(account.isUserLoggedIn(this)) {
+        	Log.d(Constants.TAG, "user is logged in");
+        	
+        	AccessToken token = account.getTokenFromPreferences();
+        	account.setAccessToken(token);
+        	
         	setContentView(R.layout.timeline_layout);
         	initializeUI();
-        	showTweets.setOnClickListener(this);
+//        	showTweets.setOnClickListener(this);
         	getStatuses();
         	updateTimelineUI();
+        } else {
+        	login();
+        	Log.d(Constants.TAG, "user is not logged in");
         }
     }
     
@@ -104,52 +109,54 @@ public class TimelineActivity extends Activity implements OnClickListener, Simpl
     
 	private void updateTimelineUI() {
 		Cursor data = dbHelper.query(Constants.TABLE_NAME, null, null);
-		data.moveToFirst();
-		adapter = new SimpleCursorAdapter(this, R.layout.tweet_row, data, 
-				new String[] {Constants.CREATED_TIME, Constants.USERNAME, Constants.PROFILE_IMAGE, Constants.TWEET}, 
-				new int[] {R.id.time, R.id.username, R.id.userImageView, R.id.tweetMessage});
-		
-		SimpleCursorAdapter.ViewBinder viewBinder = new SimpleCursorAdapter.ViewBinder() {
+		if (data.moveToFirst()) {
+			adapter = new SimpleCursorAdapter(this, R.layout.tweet_row, data, 
+					new String[] {Constants.CREATED_TIME, Constants.USERNAME, Constants.PROFILE_IMAGE, Constants.TWEET}, 
+					new int[] {R.id.time, R.id.username, R.id.userImageView, R.id.tweetMessage});
 			
-			public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-				Bitmap bmp = null;
-				String imageUrlString = cursor.getString(columnIndex);
-				String username = cursor.getString(cursor.getColumnIndex(Constants.USERNAME));
-				String path = getDir("images", MODE_PRIVATE).getAbsolutePath() + "/" + username + ".png";
-				Log.d(Constants.TAG, "username: " + username);
-				Log.d(Constants.TAG, "imageUrlString: " + imageUrlString);
-				Log.d(Constants.TAG, "path: " + path);
-				try {
-					URL imageUrl = new URL(imageUrlString);
-					HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
-					connection.connect();
+			SimpleCursorAdapter.ViewBinder viewBinder = new SimpleCursorAdapter.ViewBinder() {
+				public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+					if(view != null && view.getId() != R.id.userImageView) {
+						return false;
+					}
+					Bitmap bmp = null;
+					String imageUrlString = cursor.getString(columnIndex);
+					String username = cursor.getString(cursor.getColumnIndex(Constants.USERNAME));
+					String path = getDir("images", MODE_PRIVATE).getAbsolutePath() + "/" + username + ".png";
+					Log.d(Constants.TAG, "username: " + username);
+					Log.d(Constants.TAG, "imageUrlString: " + imageUrlString);
+					Log.d(Constants.TAG, "path: " + path);
+					try {
+						URL imageUrl = new URL(imageUrlString);
+						HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
+						connection.connect();
+						
+						InputStream is = connection.getInputStream();
+						bmp = saveImageFile(is, path);
+						
+					} catch (MalformedURLException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					} 
 					
-					InputStream is = connection.getInputStream();
-					bmp = saveImageFile(is, path);
-					
-				} catch (MalformedURLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} 
-				
-				if (view instanceof ImageView) {
-					((ImageView) view).setImageBitmap(bmp);
-					Log.d(Constants.TAG, "view is an instance of ImageView");
+					if (view instanceof ImageView) {
+						((ImageView) view).setImageBitmap(bmp);
+						Log.d(Constants.TAG, "view is an instance of ImageView");
+					}
+					return true;
 				}
-				return true;
-			}
-		};
-		
-		int index = data.getColumnIndex(Constants.PROFILE_IMAGE);
-		Log.d(Constants.TAG, "" + index);
-		viewBinder.setViewValue(userImageView, data, index);
-		
-		adapter.setViewBinder(viewBinder);
-		
-		timelineList.setAdapter(adapter);
+			};
+			
+			int index = data.getColumnIndex(Constants.PROFILE_IMAGE);
+//			Log.d(Constants.TAG, "" + index);
+			
+			adapter.setViewBinder(viewBinder);
+			
+			viewBinder.setViewValue(userImageView, data, index);
+			
+			timelineList.setAdapter(adapter);
+		}
 	}
 
 	private void getStatuses() {
@@ -159,19 +166,19 @@ public class TimelineActivity extends Activity implements OnClickListener, Simpl
 				dbHelper.addStatus(status);
 			}
 		} catch (TwitterException e) {
-			Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+			Log.d(Constants.TAG, e.getErrorMessage());
 		}
 	}
 
 	private void initializeUI() {
     	timelineList = (ListView) findViewById(R.id.tweetList);
     	userImageView = (ImageView) findViewById(R.id.userImageView);
-    	username = (TextView) findViewById(R.id.username);
-    	time = (TextView) findViewById(R.id.time);
-    	tweetText = (TextView) findViewById(R.id.tweetMessage);
-    	retweetedBy = (TextView) findViewById(R.id.retweetedBy);
+//    	username = (TextView) findViewById(R.id.username);
+//    	time = (TextView) findViewById(R.id.time);
+//    	tweetText = (TextView) findViewById(R.id.tweetMessage);
+//    	retweetedBy = (TextView) findViewById(R.id.retweetedBy);
     	
-    	showTweets = (ImageButton) findViewById(R.id.showTweets);
+//    	showTweets = (ImageButton) findViewById(R.id.showTweets);
     }
     
     private void login() {
@@ -183,8 +190,8 @@ public class TimelineActivity extends Activity implements OnClickListener, Simpl
     			super.onPageFinished(view, url);
     			if(url.contains(Constants.CALLBACK_URL)) {
     				Uri uri = Uri.parse(url);
-    				Toast.makeText(getApplicationContext(), url, Toast.LENGTH_LONG).show();
-//    				Log.d(Constants.TAG, url);
+//    				Toast.makeText(getApplicationContext(), url, Toast.LENGTH_LONG).show();
+    				Log.d(Constants.TAG, "onPageFinished: " + url);
     				
     				String oAuthVerifier = uri.getQueryParameter(Constants.OAUTH_VERIFIER);
     				AccessToken token;
@@ -192,7 +199,8 @@ public class TimelineActivity extends Activity implements OnClickListener, Simpl
 						token = account.getAccessToken(oAuthVerifier);
 						Log.d(Constants.TAG, token.getToken());
 						account.setAccessToken(token);
-						account.setAccessToken(token);
+						account.writeTokenToPrefs(token);
+//						account.setAccessToken(token);
 					} catch (TwitterException e) {
 						e.printStackTrace();
 					}
@@ -208,7 +216,8 @@ public class TimelineActivity extends Activity implements OnClickListener, Simpl
     		public void onReceivedError(WebView view, int errorCode,
     				String description, String failingUrl) {
     			super.onReceivedError(view, errorCode, description, failingUrl);
-    			Toast.makeText(getApplicationContext(), description, Toast.LENGTH_LONG).show();
+//    			Toast.makeText(getApplicationContext(), description, Toast.LENGTH_LONG).show();
+    			Log.d(Constants.TAG, "onReceivedError: " + description);
     		}
     	});
     	
@@ -217,21 +226,8 @@ public class TimelineActivity extends Activity implements OnClickListener, Simpl
 		} catch (TwitterException e) {
 			Toast.makeText(getApplicationContext(), e.getErrorMessage(), Toast.LENGTH_LONG).show();
 		} catch (Exception e) {
-			// TODO: handle exception
 			Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
 		}
     	setContentView(webView);
     }
-
-	public void onClick(View v) {
-		getStatuses();
-    	updateTimelineUI();
-	}
-
-	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-		String imageUrlString = cursor.getString(columnIndex);
-		Bitmap bmp = BitmapFactory.decodeFile(imageUrlString);
-		userImageView.setImageBitmap(bmp);
-		return true;
-	}
 }

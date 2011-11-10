@@ -50,7 +50,8 @@ public class TwitterAccount extends Account {
 	
 	public boolean isUserLoggedIn(Context context) {
 		mPrefs = context.getSharedPreferences(Constants.PREFERENCES_NAME, Context.MODE_PRIVATE);
-		if(mPrefs.contains(Constants.ACCESS_TOKEN)) {
+		if(mPrefs.getString(Constants.ACCESS_TOKEN, null) != null) {
+			Log.d(Constants.TAG, Constants.ACCESS_TOKEN + " found");
 			return true;
 		}
 		else {
@@ -74,9 +75,21 @@ public class TwitterAccount extends Account {
 		editor.putString(Constants.ACCESS_TOKEN, token);
 		editor.putString(Constants.ACCESS_TOKEN_SECRET, tokenSecret);
 		editor.commit();
+		
+		Log.d(Constants.TAG, mPrefs.getString(Constants.ACCESS_TOKEN, null));
 	}
 	
 	public void setAccessToken(AccessToken accessToken) {
+		Log.d(Constants.TAG, "setAccessToken called");
 		twitter.setOAuthAccessToken(accessToken);
+	}
+
+	public AccessToken getTokenFromPreferences() {
+		Log.d(Constants.TAG, "getTokenFromPreferences called");
+		String token = mPrefs.getString(Constants.ACCESS_TOKEN, null);
+		String tokenSecret = mPrefs.getString(Constants.ACCESS_TOKEN_SECRET, null);
+		AccessToken accessToken = null;
+		accessToken = new AccessToken(token, tokenSecret);
+		return accessToken;
 	}
 }
