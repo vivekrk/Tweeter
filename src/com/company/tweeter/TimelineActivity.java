@@ -28,6 +28,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
+import com.company.tweeter.accountmanager.Account;
 import com.company.tweeter.accountmanager.AccountManager;
 import com.company.tweeter.accountmanager.TwitterAccount;
 import com.company.tweeter.database.TweeterDbHelper;
@@ -36,7 +37,7 @@ public class TimelineActivity extends Activity {
     /** Called when the activity is first created. */
 	
 	private AccountManager manager;
-	private TwitterAccount account;
+	private Account account;
 	
 	private TweeterDbHelper dbHelper;
 	
@@ -80,7 +81,17 @@ public class TimelineActivity extends Activity {
         }
     }
     
-    
+    /**
+     * Saves the bitmap image got from the input stream in the specified path.
+     * 
+     * @param is
+     * Input stream of the image.
+     * 
+     * @param path
+     * Path where the image file is to be stored.
+     * @return
+     * Bitmap image
+     */
     
     private Bitmap saveImageFile(InputStream is, String path) {
 		try {
@@ -109,59 +120,53 @@ public class TimelineActivity extends Activity {
 		return null;
 	}
     
-    
+    /**
+     * AsyncTask calss that downloads the profile images.
+     * @author vivek
+     *
+     */
     
     class ImageDownloader extends AsyncTask<String, Integer, Bitmap> {
 
     	private String imageUrlString = null;
-    	public String getImageUrlString() {
-			return imageUrlString;
-		}
 
-
+    	/**
+    	 * Sets the image url string of the image to be downloaded.
+    	 * @param imageUrlString
+    	 */
 
 		public void setImageUrlString(String imageUrlString) {
 			this.imageUrlString = imageUrlString;
 		}
 
-
-
-		public String getFilePath() {
-			return filePath;
-		}
-
-
+		/**
+		 * Sets the file path where the image needs to be saved.
+		 * @param filePath
+		 */
 
 		public void setFilePath(String filePath) {
 			this.filePath = filePath;
 		}
 
-
-
-		public View getImageView() {
-			return imageView;
-		}
-
-
+		/**
+		 * Sets the image view returned from the ViewBinder
+		 * @param imageView
+		 */
 
 		public void setImageView(View imageView) {
 			this.imageView = imageView;
 		}
 
-
+		
 
 		private String filePath = null;
     	private View imageView = null;
-    	
     	
     	
 		@Override
 		protected Bitmap doInBackground(String... params) {
 			Bitmap bmp = null;
 			
-//			Log.d(Constants.TAG, "username: " + username);
-//			Log.d(Constants.TAG, "imageUrlString: " + imageUrlString);
-//			Log.d(Constants.TAG, "path: " + path);
 			try {
 				URL imageUrl = new URL(imageUrlString);
 				HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
@@ -188,7 +193,12 @@ public class TimelineActivity extends Activity {
     	
     }
     
-    
+    /**
+     * Updates the status messages in the ListView. 
+     * 
+     * The cursor data is set to the SimpleCursorAdapter and all the text field data is populated.
+     * ViewBinder object handles the setting of the image to the ImageView.
+     */
     
 	private void updateTimelineUI() {
 		Cursor data = dbHelper.query(Constants.TABLE_NAME, null, null);
@@ -229,11 +239,16 @@ public class TimelineActivity extends Activity {
 		}
 	}
 
-	
+	/**
+	 * Fetches the status data from the users home timeline and stores it in the database.
+	 */
 	
 	private void getStatuses() {
 		try {
-			statuses = account.getHomeTimeline();
+			if(account instanceof TwitterAccount) {
+				statuses = ((TwitterAccount) account).getHomeTimeline();
+			}
+			
 			for (Status status : statuses) {
 				dbHelper.addStatus(status);
 			}
@@ -242,6 +257,10 @@ public class TimelineActivity extends Activity {
 		}
 	}
 
+	/**
+	 * Initializes all the UI elements.
+	 */
+	
 	private void initializeUI() {
     	timelineList = (ListView) findViewById(R.id.tweetList);
     	userImageView = (ImageView) findViewById(R.id.userImageView);
@@ -253,7 +272,11 @@ public class TimelineActivity extends Activity {
 //    	showTweets = (ImageButton) findViewById(R.id.showTweets);
     }
     
-	
+	/**
+	 * Check if the user is logged in by checking if there is a preference key related to the 
+	 * AccessToken. If not, then a WebView is displayed and authentication is completed and AccessToken is set.
+	 * The AccessToken is then written to the Preferences.
+	 */
 	
     private void login() {
     	WebView webView = new WebView(this);
