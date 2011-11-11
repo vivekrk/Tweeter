@@ -9,6 +9,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.concurrent.RejectedExecutionException;
 
 import twitter4j.Status;
 import twitter4j.TwitterException;
@@ -86,20 +87,22 @@ public class TimelineActivity extends Activity {
     private Bitmap saveImageFile(InputStream is, String path) {
 		try {
 			File file = new File(path);
-			if (!file.exists())
+			if (!file.exists()) {
 				file.createNewFile();
-			FileOutputStream fo = new FileOutputStream(file);
-			byte[] buffer = new byte[1000];
-			int n = is.read(buffer, 0, 1000);
-			int size = n;
-			while (n > 0) {
-				fo.write(buffer, 0, n);
-				n = is.read(buffer, 0, 1000);
-				size += n;
+				FileOutputStream fo = new FileOutputStream(file);
+				byte[] buffer = new byte[1000];
+				int n = is.read(buffer, 0, 1000);
+				int size = n;
+				while (n > 0) {
+					fo.write(buffer, 0, n);
+					n = is.read(buffer, 0, 1000);
+					size += n;
+				}
+				Log.d("Downloading..", "total size: " + size);
 			}
-			Log.d("Downloading..", "total size: " + size);
 			Bitmap bmp = BitmapFactory.decodeFile(path);
 			return bmp;
+
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -182,7 +185,7 @@ public class TimelineActivity extends Activity {
 			// TODO Auto-generated method stub
 			if (imageView instanceof ImageView) {
 				((ImageView) imageView).setImageBitmap(result);
-				Log.d(Constants.TAG, "view is an instance of ImageView");
+//				Log.d(Constants.TAG, "view is an instance of ImageView");
 			}
 			super.onPostExecute(result);
 		}
@@ -212,9 +215,9 @@ public class TimelineActivity extends Activity {
 					downloader.setImageUrlString(imageUrlString);
 					downloader.setImageView(view);
 					downloader.setFilePath(path);
-					
+
 					downloader.execute("");
-					
+
 					return true;
 				}
 			};
