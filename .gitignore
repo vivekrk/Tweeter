@@ -38,3 +38,5 @@ bin/classes/com/company/tweeter/Constants.class
 bin/classes.dex
 
 bin/Tweeter.apk
+
+bin/classes/com/company/tweeter/TimelineActivity$ImageDownloader.class

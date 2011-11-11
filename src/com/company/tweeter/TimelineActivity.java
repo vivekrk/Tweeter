@@ -18,13 +18,12 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -82,6 +81,8 @@ public class TimelineActivity extends Activity {
         }
     }
     
+    
+    
     private Bitmap saveImageFile(InputStream is, String path) {
 		try {
 			File file = new File(path);
@@ -107,6 +108,89 @@ public class TimelineActivity extends Activity {
 		return null;
 	}
     
+    
+    
+    class ImageDownloader extends AsyncTask<String, Integer, Bitmap> {
+
+    	private String imageUrlString = null;
+    	public String getImageUrlString() {
+			return imageUrlString;
+		}
+
+
+
+		public void setImageUrlString(String imageUrlString) {
+			this.imageUrlString = imageUrlString;
+		}
+
+
+
+		public String getFilePath() {
+			return filePath;
+		}
+
+
+
+		public void setFilePath(String filePath) {
+			this.filePath = filePath;
+		}
+
+
+
+		public View getImageView() {
+			return imageView;
+		}
+
+
+
+		public void setImageView(View imageView) {
+			this.imageView = imageView;
+		}
+
+
+
+		private String filePath = null;
+    	private View imageView = null;
+    	
+    	
+    	
+		@Override
+		protected Bitmap doInBackground(String... params) {
+			Bitmap bmp = null;
+			
+//			Log.d(Constants.TAG, "username: " + username);
+//			Log.d(Constants.TAG, "imageUrlString: " + imageUrlString);
+//			Log.d(Constants.TAG, "path: " + path);
+			try {
+				URL imageUrl = new URL(imageUrlString);
+				HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
+				connection.connect();
+				
+				InputStream is = connection.getInputStream();
+				bmp = saveImageFile(is, filePath);
+				return bmp;
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} 
+			return null;
+		}
+		
+		@Override
+		protected void onPostExecute(Bitmap result) {
+			// TODO Auto-generated method stub
+			if (imageView instanceof ImageView) {
+				((ImageView) imageView).setImageBitmap(result);
+				Log.d(Constants.TAG, "view is an instance of ImageView");
+			}
+			super.onPostExecute(result);
+		}
+    	
+    }
+    
+    
+    
 	private void updateTimelineUI() {
 		Cursor data = dbHelper.query(Constants.TABLE_NAME, null, null);
 		if (data.moveToFirst()) {
@@ -119,31 +203,18 @@ public class TimelineActivity extends Activity {
 					if(view != null && view.getId() != R.id.userImageView) {
 						return false;
 					}
-					Bitmap bmp = null;
+					
 					String imageUrlString = cursor.getString(columnIndex);
 					String username = cursor.getString(cursor.getColumnIndex(Constants.USERNAME));
 					String path = getDir("images", MODE_PRIVATE).getAbsolutePath() + "/" + username + ".png";
-					Log.d(Constants.TAG, "username: " + username);
-					Log.d(Constants.TAG, "imageUrlString: " + imageUrlString);
-					Log.d(Constants.TAG, "path: " + path);
-					try {
-						URL imageUrl = new URL(imageUrlString);
-						HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
-						connection.connect();
-						
-						InputStream is = connection.getInputStream();
-						bmp = saveImageFile(is, path);
-						
-					} catch (MalformedURLException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					} 
 					
-					if (view instanceof ImageView) {
-						((ImageView) view).setImageBitmap(bmp);
-						Log.d(Constants.TAG, "view is an instance of ImageView");
-					}
+					ImageDownloader downloader = new ImageDownloader();
+					downloader.setImageUrlString(imageUrlString);
+					downloader.setImageView(view);
+					downloader.setFilePath(path);
+					
+					downloader.execute("");
+					
 					return true;
 				}
 			};
@@ -159,6 +230,8 @@ public class TimelineActivity extends Activity {
 		}
 	}
 
+	
+	
 	private void getStatuses() {
 		try {
 			statuses = account.getHomeTimeline();
@@ -181,6 +254,8 @@ public class TimelineActivity extends Activity {
 //    	showTweets = (ImageButton) findViewById(R.id.showTweets);
     }
     
+	
+	
     private void login() {
     	WebView webView = new WebView(this);
     	webView.getSettings().setJavaScriptEnabled(true);
