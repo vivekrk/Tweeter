@@ -9,7 +9,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
-import java.util.concurrent.RejectedExecutionException;
 
 import twitter4j.Status;
 import twitter4j.TwitterException;
@@ -28,7 +27,6 @@ import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
-import android.widget.Toast;
 
 import com.company.tweeter.accountmanager.AccountManager;
 import com.company.tweeter.accountmanager.TwitterAccount;
@@ -182,10 +180,8 @@ public class TimelineActivity extends Activity {
 		
 		@Override
 		protected void onPostExecute(Bitmap result) {
-			// TODO Auto-generated method stub
 			if (imageView instanceof ImageView) {
 				((ImageView) imageView).setImageBitmap(result);
-//				Log.d(Constants.TAG, "view is an instance of ImageView");
 			}
 			super.onPostExecute(result);
 		}
@@ -196,6 +192,7 @@ public class TimelineActivity extends Activity {
     
 	private void updateTimelineUI() {
 		Cursor data = dbHelper.query(Constants.TABLE_NAME, null, null);
+		
 		if (data.moveToFirst()) {
 			adapter = new SimpleCursorAdapter(this, R.layout.tweet_row, data, 
 					new String[] {Constants.CREATED_TIME, Constants.USERNAME, Constants.PROFILE_IMAGE, Constants.TWEET}, 
@@ -206,7 +203,6 @@ public class TimelineActivity extends Activity {
 					if(view != null && view.getId() != R.id.userImageView) {
 						return false;
 					}
-					
 					String imageUrlString = cursor.getString(columnIndex);
 					String username = cursor.getString(cursor.getColumnIndex(Constants.USERNAME));
 					String path = getDir("images", MODE_PRIVATE).getAbsolutePath() + "/" + username + ".png";
@@ -273,15 +269,10 @@ public class TimelineActivity extends Activity {
     				
     				String oAuthVerifier = uri.getQueryParameter(Constants.OAUTH_VERIFIER);
     				AccessToken token;
-					try {
 						token = account.getAccessToken(oAuthVerifier);
 						Log.d(Constants.TAG, token.getToken());
 						account.setAccessToken(token);
 						account.writeTokenToPrefs(token);
-//						account.setAccessToken(token);
-					} catch (TwitterException e) {
-						e.printStackTrace();
-					}
     				
     				setContentView(R.layout.timeline_layout);
     				initializeUI();
@@ -298,14 +289,8 @@ public class TimelineActivity extends Activity {
     			Log.d(Constants.TAG, "onReceivedError: " + description);
     		}
     	});
-    	
-    	try {
-			webView.loadUrl(account.getAuthenticationUrl());
-		} catch (TwitterException e) {
-			Toast.makeText(getApplicationContext(), e.getErrorMessage(), Toast.LENGTH_LONG).show();
-		} catch (Exception e) {
-			Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-		}
+
+    	webView.loadUrl(account.getAuthenticationUrl());
     	setContentView(webView);
     }
 }
