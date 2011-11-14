@@ -128,16 +128,16 @@ public class TimelineActivity extends Activity {
     
     class ImageDownloader extends AsyncTask<String, Integer, Bitmap> {
 
-    	private String imageUrlString = null;
+//    	private String imageUrlString = null;
 
     	/**
     	 * Sets the image url string of the image to be downloaded.
     	 * @param imageUrlString
     	 */
 
-		public void setImageUrlString(String imageUrlString) {
-			this.imageUrlString = imageUrlString;
-		}
+//		public void setImageUrlString(String imageUrlString) {
+//			this.imageUrlString = imageUrlString;
+//		}
 
 		/**
 		 * Sets the file path where the image needs to be saved.
@@ -166,9 +166,12 @@ public class TimelineActivity extends Activity {
 		@Override
 		protected Bitmap doInBackground(String... params) {
 			Bitmap bmp = null;
+			URL imageUrl = null;
 			
 			try {
-				URL imageUrl = new URL(imageUrlString);
+				for (int i = 0; i < params.length; i++) {
+					imageUrl = new URL(params[i]);
+				}
 				HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
 				connection.connect();
 				
@@ -218,11 +221,11 @@ public class TimelineActivity extends Activity {
 					String path = getDir("images", MODE_PRIVATE).getAbsolutePath() + "/" + username + ".png";
 					
 					ImageDownloader downloader = new ImageDownloader();
-					downloader.setImageUrlString(imageUrlString);
+//					downloader.setImageUrlString(imageUrlString);
 					downloader.setImageView(view);
 					downloader.setFilePath(path);
 
-					downloader.execute("");
+					downloader.execute(imageUrlString);
 
 					return true;
 				}
