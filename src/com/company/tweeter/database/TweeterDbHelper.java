@@ -15,7 +15,7 @@ public class TweeterDbHelper extends SQLiteOpenHelper {
 
 //	private static final String TABLE_NAME = "twitterdata";
 	private static final String CREATE_DATABASE = "CREATE TABLE twitterdata (_id INTEGER PRIMARY KEY, "
-			+ " time TEXT, username TEXT, image TEXT, tweet TEXT);";
+			+ " time TEXT, username TEXT, image TEXT, tweet TEXT, retweetedby TEXT);";
 	
 	public TweeterDbHelper(Context context) {
 		super(context, Constants.DATABASE_NAME, null, Constants.DB_VERSION);
@@ -45,6 +45,7 @@ public class TweeterDbHelper extends SQLiteOpenHelper {
 		String username = status.getUser().getScreenName();
 		String imageUrl = status.getUser().getProfileImageURL().toString();
 		String tweet = status.getText();
+		String reTweetedBy = status.getInReplyToScreenName();
 		long statusID = status.getId();
 		
 		SQLiteDatabase db = getWritableDatabase();
@@ -55,6 +56,7 @@ public class TweeterDbHelper extends SQLiteOpenHelper {
 		cv.put(Constants.USERNAME, username);
 		cv.put(Constants.PROFILE_IMAGE, imageUrl);
 		cv.put(Constants.TWEET, tweet);
+		cv.put(Constants.RETWEETED_BY, reTweetedBy);
 		
 		db.insert(Constants.TABLE_NAME, Constants.TWEET, cv);
 	}

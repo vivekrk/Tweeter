@@ -14,7 +14,7 @@ public class Constants {
 	public static final String OAUTH_VERIFIER = "oauth_verifier";
 	
 	public static final String DATABASE_NAME = "Tweeter";
-	public static final int DB_VERSION = 1;
+	public static final int DB_VERSION = 2;
 	public static final String TABLE_NAME = "twitterdata";
 	
 	public static final String STATUS_ID = "_id";
@@ -22,5 +22,6 @@ public class Constants {
 	public static final String USERNAME = "username";
 	public static final String PROFILE_IMAGE = "image";
 	public static final String TWEET = "tweet";
+	public static final String RETWEETED_BY = "retweetedby";
 	
 }
