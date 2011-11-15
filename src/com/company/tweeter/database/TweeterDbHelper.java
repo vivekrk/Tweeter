@@ -36,7 +36,8 @@ public class TweeterDbHelper extends SQLiteOpenHelper {
 	
 	public Cursor query(String tableName, String[] projection, String selection) {
 		SQLiteDatabase db = getReadableDatabase();
-		Cursor data = db.query(tableName, projection, selection, null, null, null, null);
+		String orderBy = Constants.STATUS_ID + " DESC";
+		Cursor data = db.query(tableName, projection, selection, null, null, null, orderBy);
 		return data;
 	}
 	
