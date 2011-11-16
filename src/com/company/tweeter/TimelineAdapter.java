@@ -1,10 +1,6 @@
 package com.company.tweeter;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Hashtable;
-import java.util.Map;
-import java.util.WeakHashMap;
 
 import android.app.Activity;
 import android.database.Cursor;
@@ -40,6 +36,7 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 		Log.d(Constants.TAG, "Inside TimelineAdapter Constructor");
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		// TODO Auto-generated method stub
@@ -60,7 +57,9 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 			String usernameString = data.getString(data.getColumnIndex(Constants.USERNAME));
 			String imageUrl = data.getString(data.getColumnIndex(Constants.PROFILE_IMAGE));
 			
-			imageUrlHastable.put(usernameString, imageUrl);
+			if(!imageUrlHastable.contains(usernameString)) {
+				imageUrlHastable.put(usernameString, imageUrl);
+			}
 			
 			username.setText(usernameString);
 			time.setText(data.getString(data.getColumnIndex(Constants.CREATED_TIME)));
@@ -71,15 +70,16 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 			
 			if(imagePath == null) {
 				userProfileImageView.setImageResource(R.drawable.ic_launcher);
-				Log.d(Constants.TAG, "Now downloading image for..." + usernameString);
-				Log.d(Constants.TAG, "###########");
+//				Log.d(Constants.TAG, "Now downloading image for..." + usernameString);
+//				Log.d(Constants.TAG, "###########");
 				ImageDownloader downloader = new ImageDownloader();
 				downloader.execute(imageUrlHastable);
 			}
 			else {
-				userProfileImageView.setImageBitmap(getImageBitmapFromPath(imagePath));
-				Log.d(Constants.TAG, "Image found at..." + imagePath);
-				Log.d(Constants.TAG, "###########");
+				Bitmap bm = getImageBitmapFromPath(imagePath);
+				userProfileImageView.setImageBitmap(ImageHelper.getRoundedCornerBitmap(bm));
+//				Log.d(Constants.TAG, "Image found at..." + imagePath);
+//				Log.d(Constants.TAG, "###########");
 			}
 			
 		}

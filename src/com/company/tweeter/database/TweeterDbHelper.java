@@ -61,7 +61,7 @@ public class TweeterDbHelper extends SQLiteOpenHelper {
 		cv.put(Constants.RETWEETED_BY, reTweetedBy);
 		
 		try {
-			db.insert(Constants.TABLE_NAME, Constants.TWEET, cv);
+			db.insert(Constants.TABLE_NAME, Constants.RETWEETED_BY, cv);
 		} catch (SQLException e) {
 			e.getStackTrace();
 		}

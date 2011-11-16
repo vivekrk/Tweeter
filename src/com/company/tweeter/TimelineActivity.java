@@ -14,7 +14,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
@@ -38,7 +37,7 @@ public class TimelineActivity extends Activity implements OnScrollListener {
 	private List<Status> statuses;
 	
 	private ListView timelineList;
-	private ImageView userImageView;
+//	private ImageView userImageView;
 //	private TextView username;
 //	private TextView time;
 //	private TextView tweetText;
@@ -116,7 +115,7 @@ public class TimelineActivity extends Activity implements OnScrollListener {
 	
 	private void initializeUI() {
     	timelineList = (PullToRefreshListView) findViewById(R.id.tweetList);
-    	userImageView = (ImageView) findViewById(R.id.userImageView);
+//    	userImageView = (ImageView) findViewById(R.id.userImageView);
 //    	username = (TextView) findViewById(R.id.username);
 //    	time = (TextView) findViewById(R.id.time);
 //    	tweetText = (TextView) findViewById(R.id.tweetMessage);
@@ -129,7 +128,7 @@ public class TimelineActivity extends Activity implements OnScrollListener {
 			
 			public void onRefresh() {
 				// TODO Auto-generated method stub
-				
+				getStatuses();
 			}
 		});
     	

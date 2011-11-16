@@ -48,3 +48,19 @@ bin/classes/com/company/tweeter/ImageDownloader.class
 bin/classes/com/company/tweeter/.gitignore
 
 bin/classes/com/company/tweeter/CacheManager.class
+
+bin/classes/com/markupartist/android/widget/pulltorefresh/R.class
+
+bin/classes/com/markupartist/android/widget/pulltorefresh/R$string.class
+
+bin/classes/com/markupartist/android/widget/pulltorefresh/R$layout.class
+
+bin/classes/com/markupartist/android/widget/pulltorefresh/R$id.class
+
+bin/classes/com/markupartist/android/widget/pulltorefresh/R$drawable.class
+
+bin/classes/com/markupartist/android/widget/pulltorefresh/R$attr.class
+
+bin/classes/com/company/tweeter/ImageHelper.class
+
+gen/com/markupartist/android/widget/pulltorefresh/R.java
