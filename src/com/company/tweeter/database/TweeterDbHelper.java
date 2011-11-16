@@ -6,6 +6,7 @@ import twitter4j.Status;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -59,6 +60,10 @@ public class TweeterDbHelper extends SQLiteOpenHelper {
 		cv.put(Constants.TWEET, tweet);
 		cv.put(Constants.RETWEETED_BY, reTweetedBy);
 		
-		db.insert(Constants.TABLE_NAME, Constants.TWEET, cv);
+		try {
+			db.insert(Constants.TABLE_NAME, Constants.TWEET, cv);
+		} catch (SQLException e) {
+			e.getStackTrace();
+		}
 	}
 }

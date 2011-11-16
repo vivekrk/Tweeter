@@ -10,8 +10,12 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewTreeObserver.OnScrollChangedListener;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -21,7 +25,7 @@ import com.company.tweeter.accountmanager.AccountManager;
 import com.company.tweeter.accountmanager.TwitterAccount;
 import com.company.tweeter.database.TweeterDbHelper;
 
-public class TimelineActivity extends Activity {
+public class TimelineActivity extends Activity implements OnScrollListener {
     /** Called when the activity is first created. */
 	
 	private AccountManager manager;
@@ -119,6 +123,9 @@ public class TimelineActivity extends Activity {
 //    	retweetedBy = (TextView) findViewById(R.id.retweetedBy);
     	
 //    	showTweets = (ImageButton) findViewById(R.id.showTweets);
+    	
+    	timelineList.setOnScrollListener(this);
+    	
     }
     
 	/**
@@ -165,4 +172,20 @@ public class TimelineActivity extends Activity {
     	webView.loadUrl(account.getAuthenticationUrl());
     	setContentView(webView);
     }
+
+	public void onScroll(AbsListView view, int firstVisibleItem,
+			int visibleItemCount, int totalItemCount) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onScrollStateChanged(AbsListView view, int scrollState) {
+		// TODO Auto-generated method stub
+		if(scrollState == SCROLL_STATE_IDLE) {
+			adapter.notifyDataSetChanged();
+			Log.d(Constants.TAG, "notifyDataSetChanged called");
+		}
+
+	}
+    
 }

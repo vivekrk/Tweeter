@@ -8,16 +8,13 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Queue;
-import java.util.Stack;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Set;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.util.Log;
-import android.view.View;
-import android.widget.ImageView;
 
 /**
  * AsyncTask class that downloads the profile images.
@@ -25,44 +22,42 @@ import android.widget.ImageView;
  *
  */
 
-class ImageDownloader extends AsyncTask<ArrayList<String>, Integer, Bitmap> {
+class ImageDownloader extends AsyncTask<Hashtable<String, String>, Integer, Void> {
 
-	private String filePath = null;
-	private View imageView = null;
+	private String imageSavePath;// = Environment.getDataDirectory().getAbsolutePath() + usernameString + ".png";
 	
-	/**
-	 * Sets the file path where the image needs to be saved.
-	 * @param filePath
-	 */
-
-	public void setFilePath(String filePath) {
-		this.filePath = filePath;
-	}
-
-	/**
-	 * Sets the image view returned from the ViewBinder
-	 * @param imageView
-	 */
-
-	public void setImageView(View imageView) {
-		this.imageView = imageView;
-	}
+	private String usernameString;
 
 	@Override
-	protected Bitmap doInBackground(ArrayList<String>... params) {
-		Bitmap bmp = null;
+	protected Void doInBackground(Hashtable<String, String>... params) {
 		URL imageUrl = null;
+		
+		CacheManager manager = CacheManager.getInstance();
 		
 		try {
 			for (int i = 0; i < params.length; i++) {
-//				imageUrl = new URL(params[i].poll());
+				Set<String> usernamesSet = params[i].keySet();
+				Iterator<String> iterator = usernamesSet.iterator();
+				
+				if(iterator.hasNext()) {
+					usernameString = iterator.next();
+					imageSavePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/"
+							+ usernameString + ".png";
+					imageUrl = new URL(params[i].get(usernameString));
+					params[i].remove(usernameString);
+					
+					HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
+					connection.connect();
+					
+					InputStream is = connection.getInputStream();
+					saveImageFile(is, imageSavePath);
+					
+					manager.setImageForKey(usernameString, imageSavePath);
+					Log.d(Constants.TAG, "Download complete: " + usernameString);
+				}
+				
 			}
-			HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
-			connection.connect();
-			
-			InputStream is = connection.getInputStream();
-			bmp = saveImageFile(is, filePath);
-			return bmp;
+
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -72,10 +67,7 @@ class ImageDownloader extends AsyncTask<ArrayList<String>, Integer, Bitmap> {
 	}
 	
 	@Override
-	protected void onPostExecute(Bitmap result) {
-		if (imageView instanceof ImageView) {
-			((ImageView) imageView).setImageBitmap(result);
-		}
+	protected void onPostExecute(Void result) {
 		super.onPostExecute(result);
 	}
 	
@@ -91,31 +83,29 @@ class ImageDownloader extends AsyncTask<ArrayList<String>, Integer, Bitmap> {
      * Bitmap image
      */
     
-    private Bitmap saveImageFile(InputStream is, String path) {
+    private void saveImageFile(InputStream is, String path) {
+    	final int BUFFER_SIZE = 1000;
 		try {
 			File file = new File(path);
 			if (!file.exists()) {
 				file.createNewFile();
 				FileOutputStream fo = new FileOutputStream(file);
-				byte[] buffer = new byte[1000];
-				int n = is.read(buffer, 0, 1000);
+				byte[] buffer = new byte[BUFFER_SIZE];
+				int n = is.read(buffer, 0, BUFFER_SIZE);
 				int size = n;
 				while (n > 0) {
 					fo.write(buffer, 0, n);
-					n = is.read(buffer, 0, 1000);
+					n = is.read(buffer, 0, BUFFER_SIZE);
 					size += n;
 				}
 				Log.d(Constants.TAG, "Downloading..." + "total size: " + size);
 			}
-			Bitmap bmp = BitmapFactory.decodeFile(path);
-			return bmp;
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return null;
 	}
 	
 }
