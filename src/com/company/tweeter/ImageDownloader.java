@@ -12,8 +12,9 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.util.Log;
 
 /**
@@ -27,6 +28,8 @@ class ImageDownloader extends AsyncTask<Hashtable<String, String>, Integer, Void
 	private String imageSavePath;// = Environment.getDataDirectory().getAbsolutePath() + usernameString + ".png";
 	
 	private String usernameString;
+	
+	private Activity activity;
 
 	@Override
 	protected Void doInBackground(Hashtable<String, String>... params) {
@@ -41,8 +44,8 @@ class ImageDownloader extends AsyncTask<Hashtable<String, String>, Integer, Void
 				
 				if(iterator.hasNext()) {
 					usernameString = iterator.next();
-					imageSavePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/"
-							+ usernameString + ".png";
+					imageSavePath = activity.getDir("profile_image_cache", Context.MODE_PRIVATE).getAbsolutePath()
+							+ "/" + usernameString + ".png";
 					imageUrl = new URL(params[i].get(usernameString));
 					params[i].remove(usernameString);
 					
@@ -106,6 +109,11 @@ class ImageDownloader extends AsyncTask<Hashtable<String, String>, Integer, Void
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void setContext(Activity activity) {
+		// TODO Auto-generated method stub
+		this.activity = activity;
 	}
 	
 }

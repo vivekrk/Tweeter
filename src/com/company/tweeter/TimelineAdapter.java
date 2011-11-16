@@ -33,6 +33,7 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 		cacheManager = CacheManager.getInstance();
 		imageUrlHastable = new Hashtable<String, String>();
 		
+		
 		Log.d(Constants.TAG, "Inside TimelineAdapter Constructor");
 	}
 	
@@ -73,6 +74,7 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 //				Log.d(Constants.TAG, "Now downloading image for..." + usernameString);
 //				Log.d(Constants.TAG, "###########");
 				ImageDownloader downloader = new ImageDownloader();
+				downloader.setContext(activity);
 				downloader.execute(imageUrlHastable);
 			}
 			else {

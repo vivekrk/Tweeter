@@ -84,8 +84,8 @@ public class TimelineActivity extends Activity implements OnScrollListener {
 		
 		if (data.moveToFirst()) {
 			adapter = new TimelineAdapter(this, R.layout.tweet_row, data, 
-					new String[] {Constants.CREATED_TIME, Constants.USERNAME, Constants.PROFILE_IMAGE, Constants.TWEET}, 
-					new int[] {R.id.time, R.id.username, R.id.userImageView, R.id.tweetMessage});
+					new String[] {Constants.CREATED_TIME, Constants.USERNAME, Constants.PROFILE_IMAGE, Constants.TWEET, Constants.RETWEETED_BY}, 
+					new int[] {R.id.time, R.id.username, R.id.userImageView, R.id.tweetMessage, R.id.retweetedBy});
 			
 			timelineList.setAdapter(adapter);
 		}
