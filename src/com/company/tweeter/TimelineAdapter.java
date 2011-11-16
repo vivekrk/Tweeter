@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,14 +63,21 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 			tweetMessage.setText(data.getString(data.getColumnIndex(Constants.TWEET)));
 			retweetedBy.setText(data.getString(data.getColumnIndex(Constants.RETWEETED_BY)));
 			
-			if(cacheManager.getImageForKey(usernameString) == null) {
+			String imagePath = cacheManager.getImageForKey(usernameString);
+			
+			if(imagePath == null) {
 				ImageDownloader downloader = new ImageDownloader();
 				downloader.execute(imageUrlList);
 			}
 			
+			userProfileImageView.setImageBitmap(getImageBitmapFromPath(imagePath));
 		}
 		
 		return v;
+	}
+	
+	private Bitmap getImageBitmapFromPath(String imagePath) {
+		return BitmapFactory.decodeFile(imagePath);
 	}
 	
 	@Override
