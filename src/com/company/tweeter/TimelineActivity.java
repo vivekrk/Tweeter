@@ -10,8 +10,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.view.ViewTreeObserver.OnScrollChangedListener;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AbsListView;
@@ -24,6 +22,8 @@ import com.company.tweeter.accountmanager.Account;
 import com.company.tweeter.accountmanager.AccountManager;
 import com.company.tweeter.accountmanager.TwitterAccount;
 import com.company.tweeter.database.TweeterDbHelper;
+import com.markupartist.android.widget.PullToRefreshListView;
+import com.markupartist.android.widget.PullToRefreshListView.OnRefreshListener;
 
 public class TimelineActivity extends Activity implements OnScrollListener {
     /** Called when the activity is first created. */
@@ -64,7 +64,7 @@ public class TimelineActivity extends Activity implements OnScrollListener {
         	
         	setContentView(R.layout.timeline_layout);
         	initializeUI();
-//        	showTweets.setOnClickListener(this);
+        	
         	getStatuses();
         	updateTimelineUI();
         } else {
@@ -115,7 +115,7 @@ public class TimelineActivity extends Activity implements OnScrollListener {
 	 */
 	
 	private void initializeUI() {
-    	timelineList = (ListView) findViewById(R.id.tweetList);
+    	timelineList = (PullToRefreshListView) findViewById(R.id.tweetList);
     	userImageView = (ImageView) findViewById(R.id.userImageView);
 //    	username = (TextView) findViewById(R.id.username);
 //    	time = (TextView) findViewById(R.id.time);
@@ -124,7 +124,14 @@ public class TimelineActivity extends Activity implements OnScrollListener {
     	
 //    	showTweets = (ImageButton) findViewById(R.id.showTweets);
     	
-    	timelineList.setOnScrollListener(this);
+//    	timelineList.setOnScrollListener(this);
+    	((PullToRefreshListView) timelineList).setOnRefreshListener(new OnRefreshListener() {
+			
+			public void onRefresh() {
+				// TODO Auto-generated method stub
+				
+			}
+		});
     	
     }
     
