@@ -1,5 +1,7 @@
 package com.company.tweeter;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.database.Cursor;
 import android.util.Log;
@@ -15,12 +17,19 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 	private Activity activity;
 	private Cursor data;
 	
+	private CacheManager cacheManager;
+	
+	private ArrayList<String> imageUrlList;
+	
 	public TimelineAdapter(Activity activity, int layout, Cursor c,
 			String[] from, int[] to) {
 		super(activity, layout, c, from, to);
 		// TODO Auto-generated constructor stub
 		this.activity = activity;
 		this.data = c;
+		
+		cacheManager = CacheManager.getInstance();
+		imageUrlList = new ArrayList<String>();
 		
 		Log.d(Constants.TAG, "Inside TimelineAdapter Constructor");
 	}
@@ -42,10 +51,21 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 		ImageView userProfileImageView = (ImageView) v.findViewById(R.id.userImageView);
 		
 		if(data.moveToPosition(position)) {
-			username.setText(data.getString(data.getColumnIndex(Constants.USERNAME)));
+			String usernameString = data.getString(data.getColumnIndex(Constants.USERNAME));
+			String imageUrl = data.getString(data.getColumnIndex(Constants.PROFILE_IMAGE));
+			
+			imageUrlList.add(imageUrl);
+			
+			username.setText(usernameString);
 			time.setText(data.getString(data.getColumnIndex(Constants.CREATED_TIME)));
 			tweetMessage.setText(data.getString(data.getColumnIndex(Constants.TWEET)));
 			retweetedBy.setText(data.getString(data.getColumnIndex(Constants.RETWEETED_BY)));
+			
+			if(cacheManager.getImageForKey(usernameString) == null) {
+				ImageDownloader downloader = new ImageDownloader();
+				downloader.execute(imageUrlList);
+			}
+			
 		}
 		
 		return v;

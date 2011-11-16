@@ -8,6 +8,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Queue;
 import java.util.Stack;
 
 import android.graphics.Bitmap;
@@ -23,7 +25,7 @@ import android.widget.ImageView;
  *
  */
 
-class ImageDownloader extends AsyncTask<Stack<String>, Integer, Bitmap> {
+class ImageDownloader extends AsyncTask<ArrayList<String>, Integer, Bitmap> {
 
 	private String filePath = null;
 	private View imageView = null;
@@ -47,13 +49,13 @@ class ImageDownloader extends AsyncTask<Stack<String>, Integer, Bitmap> {
 	}
 
 	@Override
-	protected Bitmap doInBackground(Stack<String>... params) {
+	protected Bitmap doInBackground(ArrayList<String>... params) {
 		Bitmap bmp = null;
 		URL imageUrl = null;
 		
 		try {
 			for (int i = 0; i < params.length; i++) {
-				imageUrl = new URL(params[i].pop());
+//				imageUrl = new URL(params[i].poll());
 			}
 			HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
 			connection.connect();

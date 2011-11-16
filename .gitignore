@@ -40,3 +40,11 @@ bin/classes.dex
 bin/Tweeter.apk
 
 bin/classes/com/company/tweeter/TimelineActivity$ImageDownloader.class
+
+bin/classes/com/company/tweeter/TimelineAdapter.class
+
+bin/classes/com/company/tweeter/ImageDownloader.class
+
+bin/classes/com/company/tweeter/.gitignore
+
+bin/classes/com/company/tweeter/CacheManager.class
