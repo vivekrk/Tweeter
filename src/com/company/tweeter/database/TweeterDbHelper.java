@@ -15,7 +15,7 @@ import com.company.tweeter.Constants;
 public class TweeterDbHelper extends SQLiteOpenHelper {
 
 //	private static final String TABLE_NAME = "twitterdata";
-	private static final String CREATE_DATABASE = "CREATE TABLE twitterdata (_id INTEGER PRIMARY KEY, "
+	private static final String CREATE_DATABASE = "CREATE TABLE twitterdata (_id TEXT PRIMARY KEY, "
 			+ " time TEXT, username TEXT, image TEXT, tweet TEXT, retweetedby TEXT);";
 	
 	public TweeterDbHelper(Context context) {
@@ -61,7 +61,7 @@ public class TweeterDbHelper extends SQLiteOpenHelper {
 		cv.put(Constants.RETWEETED_BY, reTweetedBy);
 		
 		try {
-			db.insert(Constants.TABLE_NAME, Constants.RETWEETED_BY, cv);
+			db.insert(Constants.TABLE_NAME, null, cv);
 		} catch (SQLException e) {
 			e.getStackTrace();
 		}
