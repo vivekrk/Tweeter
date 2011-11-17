@@ -30,6 +30,8 @@ class ImageDownloader extends AsyncTask<Hashtable<String, String>, Integer, Void
 	private String usernameString;
 	
 	private Activity activity;
+	
+	private OnDownloadCompletedListener onDownloadCompletedListener = null;
 
 	@Override
 	protected Void doInBackground(Hashtable<String, String>... params) {
@@ -71,6 +73,7 @@ class ImageDownloader extends AsyncTask<Hashtable<String, String>, Integer, Void
 	
 	@Override
 	protected void onPostExecute(Void result) {
+		onDownloadCompletedListener.onDownloadCompleted();
 		super.onPostExecute(result);
 	}
 	
@@ -114,6 +117,14 @@ class ImageDownloader extends AsyncTask<Hashtable<String, String>, Integer, Void
 	public void setContext(Activity activity) {
 		// TODO Auto-generated method stub
 		this.activity = activity;
+	}
+	
+	public void setOnDownloadCompletedListener(OnDownloadCompletedListener listener) {
+		onDownloadCompletedListener = listener;
+	}
+	
+	public interface OnDownloadCompletedListener {
+		public abstract void onDownloadCompleted();
 	}
 	
 }

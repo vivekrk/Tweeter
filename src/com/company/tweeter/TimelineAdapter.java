@@ -13,6 +13,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.company.tweeter.ImageDownloader.OnDownloadCompletedListener;
 
 public class TimelineAdapter extends SimpleCursorAdapter {
 
@@ -58,7 +61,7 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 			String usernameString = data.getString(data.getColumnIndex(Constants.USERNAME));
 			String imageUrl = data.getString(data.getColumnIndex(Constants.PROFILE_IMAGE));
 			
-			if(!imageUrlHastable.contains(usernameString)) {
+			if(!imageUrlHastable.contains(usernameString) && cacheManager.getImageForKey(usernameString) == null) {
 				imageUrlHastable.put(usernameString, imageUrl);
 			}
 			
@@ -75,13 +78,24 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 //				Log.d(Constants.TAG, "###########");
 				ImageDownloader downloader = new ImageDownloader();
 				downloader.setContext(activity);
+				downloader.setOnDownloadCompletedListener(new OnDownloadCompletedListener() {
+					
+					public void onDownloadCompleted() {
+						notifyDataSetChanged();
+					}
+				});
 				downloader.execute(imageUrlHastable);
 			}
 			else {
-				Bitmap bm = getImageBitmapFromPath(imagePath);
-				userProfileImageView.setImageBitmap(ImageHelper.getRoundedCornerBitmap(bm));
-//				Log.d(Constants.TAG, "Image found at..." + imagePath);
-//				Log.d(Constants.TAG, "###########");
+				try {
+					Bitmap bm = getImageBitmapFromPath(imagePath);
+					userProfileImageView.setImageBitmap(ImageHelper
+							.getRoundedCornerBitmap(bm));
+					//				Log.d(Constants.TAG, "Image found at..." + imagePath);
+					//				Log.d(Constants.TAG, "###########");
+				} catch (NullPointerException e) {
+					Toast.makeText(activity, imagePath, Toast.LENGTH_LONG).show();
+				}
 			}
 			
 		}
@@ -90,6 +104,7 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 	}
 	
 	private Bitmap getImageBitmapFromPath(String imagePath) {
+		Log.d(Constants.TAG, BitmapFactory.decodeFile(imagePath).toString());
 		return BitmapFactory.decodeFile(imagePath);
 	}
 	
