@@ -8,6 +8,7 @@ import twitter4j.auth.AccessToken;
 import android.app.Activity;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.webkit.WebView;
@@ -35,6 +36,8 @@ public class TimelineActivity extends Activity implements OnScrollListener {
 	private SimpleCursorAdapter adapter;
 	
 	private List<Status> statuses;
+	
+	private Cursor data;
 	
 	private ListView timelineList;
 //	private ImageView userImageView;
@@ -64,7 +67,7 @@ public class TimelineActivity extends Activity implements OnScrollListener {
         	setContentView(R.layout.timeline_layout);
         	initializeUI();
         	
-        	getStatuses();
+        	new GetLatestStatus().execute();
         	updateTimelineUI();
         } else {
         	login();
@@ -80,7 +83,7 @@ public class TimelineActivity extends Activity implements OnScrollListener {
      */
     
 	private void updateTimelineUI() {
-		Cursor data = dbHelper.query(Constants.TABLE_NAME, null, null);
+		data = dbHelper.query(Constants.TABLE_NAME, null, null);
 		
 		if (data.moveToFirst()) {
 			adapter = new TimelineAdapter(this, R.layout.tweet_row, data, 
@@ -88,24 +91,6 @@ public class TimelineActivity extends Activity implements OnScrollListener {
 					new int[] {R.id.time, R.id.username, R.id.userImageView, R.id.tweetMessage, R.id.retweetedBy});
 			
 			timelineList.setAdapter(adapter);
-		}
-	}
-
-	/**
-	 * Fetches the status data from the users home timeline and stores it in the database.
-	 */
-	
-	private void getStatuses() {
-		try {
-			if(account instanceof TwitterAccount) {
-				statuses = ((TwitterAccount) account).getHomeTimeline();
-			}
-			
-			for (Status status : statuses) {
-				dbHelper.addStatus(status);
-			}
-		} catch (TwitterException e) {
-			Log.d(Constants.TAG, e.getErrorMessage());
 		}
 	}
 
@@ -128,11 +113,43 @@ public class TimelineActivity extends Activity implements OnScrollListener {
 			
 			public void onRefresh() {
 				// TODO Auto-generated method stub
-				getStatuses();
+				new GetLatestStatus().execute();
 			}
 		});
     	
     }
+	
+	class GetLatestStatus extends AsyncTask<Void, Integer, List<Status>> {
+
+		@Override
+		protected List<twitter4j.Status> doInBackground(Void... params) {
+			List<twitter4j.Status> newStatuses = null;
+			
+			if(account instanceof TwitterAccount) {
+				try {
+					newStatuses = ((TwitterAccount) account).getHomeTimeline();
+					for (twitter4j.Status status : newStatuses) {
+						dbHelper.addStatus(status);
+					}
+				} catch (TwitterException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+			return newStatuses;
+		}
+		
+		@Override
+		protected void onPostExecute(List<twitter4j.Status> result) {
+			// TODO Auto-generated method stub
+			data.requery();
+			adapter.notifyDataSetChanged();
+			((PullToRefreshListView) timelineList).onRefreshComplete();
+			super.onPostExecute(result);
+		}
+		
+	}
     
 	/**
 	 * Check if the user is logged in by checking if there is a preference key related to the 
@@ -161,7 +178,7 @@ public class TimelineActivity extends Activity implements OnScrollListener {
     				
     				setContentView(R.layout.timeline_layout);
     				initializeUI();
-    				getStatuses();
+    				new GetLatestStatus().execute();
     				updateTimelineUI();
     			}
     		}
