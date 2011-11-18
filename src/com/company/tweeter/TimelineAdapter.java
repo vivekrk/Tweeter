@@ -92,7 +92,7 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 			}
 			else {
 				Bitmap bm = getImageBitmapFromPath(imagePath);
-				Animation fade = AnimationUtils.loadAnimation(activity, R.anim.fade);
+//				Animation fade = AnimationUtils.loadAnimation(activity, R.anim.fade);
 				
 				if(bm != null) {
 					userProfileImageView.setImageBitmap(ImageHelper
@@ -103,7 +103,7 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 					userProfileImageView.setImageResource(R.drawable.ic_launcher);
 				}
 
-				userProfileImageView.setAnimation(fade);
+//				userProfileImageView.setAnimation(fade);
 			}
 			
 		}

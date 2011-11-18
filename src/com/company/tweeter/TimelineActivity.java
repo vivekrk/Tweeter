@@ -65,6 +65,7 @@ public class TimelineActivity extends Activity implements OnScrollListener {
         	setContentView(R.layout.timeline_layout);
         	initializeUI();
         	
+        	updateTimelineUI();
         	new GetLatestStatus().execute();
         } else {
         	login();
@@ -141,12 +142,12 @@ public class TimelineActivity extends Activity implements OnScrollListener {
 		protected void onPostExecute(List<twitter4j.Status> result) {
 			// TODO Auto-generated method stub
 			
-			if(adapter == null) {
-				updateTimelineUI();
-			} 
-			else {
+			if(adapter != null) {
 				data.requery();
 				adapter.notifyDataSetChanged();
+			}
+			else {
+				updateTimelineUI();
 			}
 			
 			
@@ -200,6 +201,14 @@ public class TimelineActivity extends Activity implements OnScrollListener {
 
     	webView.loadUrl(account.getAuthenticationUrl());
     	setContentView(webView);
+    }
+    
+    @Override
+    protected void onDestroy() {
+    	// TODO Auto-generated method stub
+    	super.onDestroy();
+    	data.close();
+    	dbHelper.close();
     }
 
 	public void onScroll(AbsListView view, int firstVisibleItem,
