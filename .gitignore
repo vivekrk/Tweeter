@@ -64,3 +64,9 @@ bin/classes/com/markupartist/android/widget/pulltorefresh/R$attr.class
 bin/classes/com/company/tweeter/ImageHelper.class
 
 gen/com/markupartist/android/widget/pulltorefresh/R.java
+
+bin/classes/com/company/tweeter/TimelineAdapter$1.class
+
+bin/classes/com/company/tweeter/TimelineActivity$GetLatestStatus.class
+
+bin/classes/com/company/tweeter/ImageDownloader$OnDownloadCompletedListener.class
