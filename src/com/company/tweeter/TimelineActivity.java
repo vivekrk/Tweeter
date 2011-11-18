@@ -35,8 +35,6 @@ public class TimelineActivity extends Activity implements OnScrollListener {
 	
 	private SimpleCursorAdapter adapter;
 	
-	private List<Status> statuses;
-	
 	private Cursor data;
 	
 	private ListView timelineList;
@@ -57,7 +55,7 @@ public class TimelineActivity extends Activity implements OnScrollListener {
         
         manager = AccountManager.getInstance();
         account = manager.getAccount();
-        Log.d(Constants.TAG, "Return value: " + account.isUserLoggedIn(this));
+        
         if(account.isUserLoggedIn(this)) {
         	Log.d(Constants.TAG, "user is logged in");
         	
@@ -68,7 +66,6 @@ public class TimelineActivity extends Activity implements OnScrollListener {
         	initializeUI();
         	
         	new GetLatestStatus().execute();
-        	updateTimelineUI();
         } else {
         	login();
         	Log.d(Constants.TAG, "user is not logged in");
@@ -143,8 +140,16 @@ public class TimelineActivity extends Activity implements OnScrollListener {
 		@Override
 		protected void onPostExecute(List<twitter4j.Status> result) {
 			// TODO Auto-generated method stub
-			data.requery();
-			adapter.notifyDataSetChanged();
+			
+			if(adapter == null) {
+				updateTimelineUI();
+			} 
+			else {
+				data.requery();
+				adapter.notifyDataSetChanged();
+			}
+			
+			
 			((PullToRefreshListView) timelineList).onRefreshComplete();
 			super.onPostExecute(result);
 		}
@@ -178,8 +183,9 @@ public class TimelineActivity extends Activity implements OnScrollListener {
     				
     				setContentView(R.layout.timeline_layout);
     				initializeUI();
+    				
     				new GetLatestStatus().execute();
-    				updateTimelineUI();
+    				
     			}
     		}
     		
@@ -205,8 +211,8 @@ public class TimelineActivity extends Activity implements OnScrollListener {
 	public void onScrollStateChanged(AbsListView view, int scrollState) {
 		// TODO Auto-generated method stub
 		if(scrollState == SCROLL_STATE_IDLE) {
-			adapter.notifyDataSetChanged();
-			Log.d(Constants.TAG, "notifyDataSetChanged called");
+//			adapter.notifyDataSetChanged();
+//			Log.d(Constants.TAG, "notifyDataSetChanged called");
 		}
 
 	}

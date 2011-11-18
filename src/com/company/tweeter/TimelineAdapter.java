@@ -10,6 +10,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
@@ -82,20 +85,25 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 					
 					public void onDownloadCompleted() {
 						notifyDataSetChanged();
+						Log.d(Constants.TAG, "Inside onDownloadCompleted");
 					}
 				});
 				downloader.execute(imageUrlHastable);
 			}
 			else {
-				try {
-					Bitmap bm = getImageBitmapFromPath(imagePath);
+				Bitmap bm = getImageBitmapFromPath(imagePath);
+				Animation fade = AnimationUtils.loadAnimation(activity, R.anim.fade);
+				
+				if(bm != null) {
 					userProfileImageView.setImageBitmap(ImageHelper
 							.getRoundedCornerBitmap(bm));
-					//				Log.d(Constants.TAG, "Image found at..." + imagePath);
-					//				Log.d(Constants.TAG, "###########");
-				} catch (NullPointerException e) {
-					Toast.makeText(activity, imagePath, Toast.LENGTH_LONG).show();
 				}
+				
+				else {
+					userProfileImageView.setImageResource(R.drawable.ic_launcher);
+				}
+
+				userProfileImageView.setAnimation(fade);
 			}
 			
 		}
@@ -104,7 +112,6 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 	}
 	
 	private Bitmap getImageBitmapFromPath(String imagePath) {
-		Log.d(Constants.TAG, BitmapFactory.decodeFile(imagePath).toString());
 		return BitmapFactory.decodeFile(imagePath);
 	}
 	
