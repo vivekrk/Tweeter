@@ -11,12 +11,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.company.tweeter.Constants;
+import com.company.tweeter.accountmanager.TwitterAccount;
 
 public class TweeterDbHelper extends SQLiteOpenHelper {
 
 //	private static final String TABLE_NAME = "twitterdata";
 	private static final String CREATE_DATABASE = "CREATE TABLE twitterdata (_id TEXT PRIMARY KEY, "
-			+ " time TEXT, username TEXT, image TEXT, tweet TEXT, retweetedby TEXT);";
+			+ " time TEXT, username TEXT, image TEXT, tweet TEXT, retweetedby TEXT, timeline INTEGER);";
 	
 	public TweeterDbHelper(Context context) {
 		super(context, Constants.DATABASE_NAME, null, Constants.DB_VERSION);
@@ -42,7 +43,7 @@ public class TweeterDbHelper extends SQLiteOpenHelper {
 		return data;
 	}
 	
-	public void addStatus(Status status) {
+	public void addStatus(Status status, int timelineType) {
 		Date createdDate = status.getCreatedAt();
 		String username = status.getUser().getScreenName();
 		String imageUrl = status.getUser().getProfileImageURL().toString();
@@ -59,6 +60,7 @@ public class TweeterDbHelper extends SQLiteOpenHelper {
 		cv.put(Constants.PROFILE_IMAGE, imageUrl);
 		cv.put(Constants.TWEET, tweet);
 		cv.put(Constants.RETWEETED_BY, reTweetedBy);
+		cv.put(Constants.TIMELINE, timelineType);
 		
 		try {
 			db.insertWithOnConflict(Constants.TABLE_NAME, null, cv, SQLiteDatabase.CONFLICT_IGNORE);

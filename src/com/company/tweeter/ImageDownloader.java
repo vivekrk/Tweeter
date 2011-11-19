@@ -58,7 +58,7 @@ class ImageDownloader extends AsyncTask<Hashtable<String, String>, Integer, Void
 					saveImageFile(is, imageSavePath);
 					
 					manager.setImageForKey(usernameString, imageSavePath);
-					Log.d(Constants.TAG, "Download complete: " + usernameString);
+//					Log.d(Constants.TAG, "Download complete: " + usernameString);
 				}
 				
 			}

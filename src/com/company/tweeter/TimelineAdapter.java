@@ -10,13 +10,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.animation.LayoutAnimationController;
 import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.company.tweeter.ImageDownloader.OnDownloadCompletedListener;
 
@@ -39,8 +35,6 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 		cacheManager = CacheManager.getInstance();
 		imageUrlHastable = new Hashtable<String, String>();
 		
-		
-		Log.d(Constants.TAG, "Inside TimelineAdapter Constructor");
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -85,7 +79,6 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 					
 					public void onDownloadCompleted() {
 						notifyDataSetChanged();
-						Log.d(Constants.TAG, "Inside onDownloadCompleted");
 					}
 				});
 				downloader.execute(imageUrlHastable);
@@ -113,12 +106,6 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 	
 	private Bitmap getImageBitmapFromPath(String imagePath) {
 		return BitmapFactory.decodeFile(imagePath);
-	}
-	
-	@Override
-	public int getCount() {
-		// TODO Auto-generated method stub
-		return super.getCount();
 	}
 
 }

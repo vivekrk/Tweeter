@@ -11,10 +11,13 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
@@ -25,7 +28,7 @@ import com.company.tweeter.database.TweeterDbHelper;
 import com.markupartist.android.widget.PullToRefreshListView;
 import com.markupartist.android.widget.PullToRefreshListView.OnRefreshListener;
 
-public class TimelineActivity extends Activity implements OnScrollListener {
+public class TimelineActivity extends Activity implements OnScrollListener, OnClickListener {
     /** Called when the activity is first created. */
 	
 	private AccountManager manager;
@@ -44,7 +47,8 @@ public class TimelineActivity extends Activity implements OnScrollListener {
 //	private TextView tweetText;
 //	private TextView retweetedBy;
 	
-//	private ImageButton showTweets;
+	private ImageButton showTweets;
+	private ImageButton showMentions;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,8 +69,8 @@ public class TimelineActivity extends Activity implements OnScrollListener {
         	setContentView(R.layout.timeline_layout);
         	initializeUI();
         	
-        	updateTimelineUI();
-        	new GetLatestStatus().execute();
+        	updateTimelineUI(TwitterAccount.TIMELINE);
+        	new GetTimelineStatus().execute();
         } else {
         	login();
         	Log.d(Constants.TAG, "user is not logged in");
@@ -80,8 +84,23 @@ public class TimelineActivity extends Activity implements OnScrollListener {
      * ViewBinder object handles the setting of the image to the ImageView.
      */
     
-	private void updateTimelineUI() {
-		data = dbHelper.query(Constants.TABLE_NAME, null, null);
+	private void updateTimelineUI(int timelineType) {
+		String selection = null;
+		switch (timelineType) {
+		case TwitterAccount.TIMELINE:
+			selection = Constants.TIMELINE + "=" + "'" + TwitterAccount.TIMELINE + "'";
+			data = dbHelper.query(Constants.TABLE_NAME, null, selection);
+			break;
+			
+		case TwitterAccount.MENTIONS:
+			selection = Constants.TIMELINE + "=" + "'" + TwitterAccount.MENTIONS + "'";
+			data = dbHelper.query(Constants.TABLE_NAME, null, selection);
+			break;
+
+		default:
+			break;
+		}
+		
 		
 		if (data.moveToFirst()) {
 			adapter = new TimelineAdapter(this, R.layout.tweet_row, data, 
@@ -104,20 +123,24 @@ public class TimelineActivity extends Activity implements OnScrollListener {
 //    	tweetText = (TextView) findViewById(R.id.tweetMessage);
 //    	retweetedBy = (TextView) findViewById(R.id.retweetedBy);
     	
-//    	showTweets = (ImageButton) findViewById(R.id.showTweets);
+    	showTweets = (ImageButton) findViewById(R.id.showTweets);
+    	showTweets.setOnClickListener(this);
     	
-//    	timelineList.setOnScrollListener(this);
+    	showMentions = (ImageButton) findViewById(R.id.showMentions);
+    	showMentions.setOnClickListener(this);
+    	
+    	timelineList.setOnScrollListener(this);
     	((PullToRefreshListView) timelineList).setOnRefreshListener(new OnRefreshListener() {
 			
 			public void onRefresh() {
 				// TODO Auto-generated method stub
-				new GetLatestStatus().execute();
+				new GetTimelineStatus().execute();
 			}
 		});
     	
     }
 	
-	class GetLatestStatus extends AsyncTask<Void, Integer, List<Status>> {
+	class GetTimelineStatus extends AsyncTask<Void, Integer, List<Status>> {
 
 		@Override
 		protected List<twitter4j.Status> doInBackground(Void... params) {
@@ -127,7 +150,7 @@ public class TimelineActivity extends Activity implements OnScrollListener {
 				try {
 					newStatuses = ((TwitterAccount) account).getHomeTimeline();
 					for (twitter4j.Status status : newStatuses) {
-						dbHelper.addStatus(status);
+						dbHelper.addStatus(status, TwitterAccount.TIMELINE);
 					}
 				} catch (TwitterException e) {
 					// TODO Auto-generated catch block
@@ -140,16 +163,16 @@ public class TimelineActivity extends Activity implements OnScrollListener {
 		
 		@Override
 		protected void onPostExecute(List<twitter4j.Status> result) {
-			// TODO Auto-generated method stub
 			
 			if(adapter != null) {
 				data.requery();
 				adapter.notifyDataSetChanged();
 			}
 			else {
-				updateTimelineUI();
+				updateTimelineUI(TwitterAccount.TIMELINE);
 			}
 			
+			Log.d(Constants.TAG, "Fetching new data");
 			
 			((PullToRefreshListView) timelineList).onRefreshComplete();
 			super.onPostExecute(result);
@@ -157,6 +180,44 @@ public class TimelineActivity extends Activity implements OnScrollListener {
 		
 	}
     
+	class GetMentionsStatus extends AsyncTask<Void, Integer, List<Status>> {
+
+		@Override
+		protected List<twitter4j.Status> doInBackground(Void... params) {
+			List<twitter4j.Status> mentions = null;
+			
+			if(account instanceof TwitterAccount) {
+				try {
+					mentions = ((TwitterAccount) account).getMentions();
+					for (twitter4j.Status status : mentions) {
+						dbHelper.addStatus(status, TwitterAccount.MENTIONS);
+					}
+				} catch (TwitterException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+			return mentions;
+		}
+		
+		@Override
+		protected void onPostExecute(List<twitter4j.Status> result) {
+			if(adapter != null) {
+				data.requery();
+				adapter.notifyDataSetChanged();
+			}
+			else {
+				updateTimelineUI(TwitterAccount.MENTIONS);
+			}
+			
+			Log.d(Constants.TAG, "Fetching new data");
+			
+			((PullToRefreshListView) timelineList).onRefreshComplete();
+			super.onPostExecute(result);
+		}
+	}
+	
 	/**
 	 * Check if the user is logged in by checking if there is a preference key related to the 
 	 * AccessToken. If not, then a WebView is displayed and authentication is completed and AccessToken is set.
@@ -185,7 +246,7 @@ public class TimelineActivity extends Activity implements OnScrollListener {
     				setContentView(R.layout.timeline_layout);
     				initializeUI();
     				
-    				new GetLatestStatus().execute();
+    				new GetTimelineStatus().execute();
     				
     			}
     		}
@@ -213,17 +274,34 @@ public class TimelineActivity extends Activity implements OnScrollListener {
 
 	public void onScroll(AbsListView view, int firstVisibleItem,
 			int visibleItemCount, int totalItemCount) {
-		// TODO Auto-generated method stub
+		boolean loadMore = firstVisibleItem + visibleItemCount >= totalItemCount;
+		if(loadMore) {
+			Log.d(Constants.TAG, "Loading more tweets");
+		}
 		
 	}
 
 	public void onScrollStateChanged(AbsListView view, int scrollState) {
 		// TODO Auto-generated method stub
-		if(scrollState == SCROLL_STATE_IDLE) {
-//			adapter.notifyDataSetChanged();
-//			Log.d(Constants.TAG, "notifyDataSetChanged called");
-		}
+		
+	}
 
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.showTweets:
+			updateTimelineUI(TwitterAccount.TIMELINE);
+			new GetTimelineStatus().execute();
+			break;
+			
+		case R.id.showMentions:
+			updateTimelineUI(TwitterAccount.MENTIONS);
+			new GetMentionsStatus().execute();
+			break;
+			
+		default:
+			break;
+		}
+		
 	}
     
 }

@@ -74,3 +74,7 @@ bin/classes/com/company/tweeter/ImageDownloader$OnDownloadCompletedListener.clas
 bin/classes/com/markupartist/android/widget/pulltorefresh/R$anim.class
 
 bin/classes/com/company/tweeter/R$anim.class
+
+bin/classes/com/company/tweeter/TimelineActivity$GetTimelineStatus.class
+
+bin/classes/com/company/tweeter/TimelineActivity$GetMentionsStatus.class
