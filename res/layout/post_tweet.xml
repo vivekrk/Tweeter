@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <RelativeLayout android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:id="@+id/newTweetImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:src="@drawable/ic_launcher" />
+
+        <ImageButton
+            android:id="@+id/newTweetButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/ic_launcher" />
+
+    </RelativeLayout>
+    <RelativeLayout 
+        android:layout_below="@id/header"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal" >
+        
+		<EditText
+		    android:id="@+id/newTweetTextField"
+		    android:layout_width="fill_parent"
+		    android:minLines="5"
+		    android:gravity="top"
+		    android:layout_height="wrap_content"
+		    android:hint="Enter your Tweet here"
+		    android:layout_below="@+id/newTweetButton"
+		    android:inputType="textMultiLine" >
+
+            <requestFocus />
+        </EditText>
+        
+    </RelativeLayout>
+	<LinearLayout
+	    android:weightSum="4"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentBottom="true"
+	    android:orientation="horizontal" >
+
+        <ImageButton
+            android:id="@+id/mention"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_launcher" />
+        
+        <ImageButton
+            android:id="@+id/snapPic"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_launcher" />
+                
+		<ImageButton
+            android:id="@+id/uploadPic"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_launcher" />
+
+        <ImageButton
+            android:id="@+id/getLocation"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_launcher" />
+    </LinearLayout>
+
+</RelativeLayout>

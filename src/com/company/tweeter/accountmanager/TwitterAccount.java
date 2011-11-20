@@ -1,13 +1,17 @@
 package com.company.tweeter.accountmanager;
 
 import twitter4j.DirectMessage;
+import twitter4j.IDs;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
 import twitter4j.Status;
+import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
+import twitter4j.User;
 import twitter4j.api.DirectMessageMethods;
+import twitter4j.api.StatusMethods;
 import twitter4j.api.TimelineMethods;
 import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
@@ -15,7 +19,7 @@ import android.util.Log;
 
 import com.company.tweeter.Constants;
 
-public class TwitterAccount extends Account implements TimelineMethods, DirectMessageMethods {
+public class TwitterAccount extends Account implements TimelineMethods, DirectMessageMethods, StatusMethods {
 	private Twitter twitter;
 	
 	public static final int TIMELINE = 1;
@@ -240,6 +244,60 @@ public class TwitterAccount extends Account implements TimelineMethods, DirectMe
 	}
 
 	public DirectMessage showDirectMessage(long id) throws TwitterException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Status showStatus(long id) throws TwitterException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Status updateStatus(String status) throws TwitterException {
+		return twitter.updateStatus(status);
+	}
+
+	public Status updateStatus(StatusUpdate latestStatus)
+			throws TwitterException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Status destroyStatus(long statusId) throws TwitterException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Status retweetStatus(long statusId) throws TwitterException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ResponseList<Status> getRetweets(long statusId)
+			throws TwitterException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ResponseList<User> getRetweetedBy(long statusId)
+			throws TwitterException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ResponseList<User> getRetweetedBy(long statusId, Paging paging)
+			throws TwitterException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public IDs getRetweetedByIDs(long statusId) throws TwitterException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public IDs getRetweetedByIDs(long statusId, Paging paging)
+			throws TwitterException {
 		// TODO Auto-generated method stub
 		return null;
 	}

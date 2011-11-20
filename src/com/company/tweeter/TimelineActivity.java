@@ -6,6 +6,7 @@ import twitter4j.Status;
 import twitter4j.TwitterException;
 import twitter4j.auth.AccessToken;
 import android.app.Activity;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -50,6 +51,7 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 	
 	private ImageButton showTweets;
 	private ImageButton showMentions;
+	private ImageButton newTweet;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -123,6 +125,9 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 //    	time = (TextView) findViewById(R.id.time);
 //    	tweetText = (TextView) findViewById(R.id.tweetMessage);
 //    	retweetedBy = (TextView) findViewById(R.id.retweetedBy);
+    	
+    	newTweet = (ImageButton) findViewById(R.id.newStatus);
+    	newTweet.setOnClickListener(this);
     	
     	showTweets = (ImageButton) findViewById(R.id.showTweets);
     	showTweets.setOnClickListener(this);
@@ -296,6 +301,11 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 		case R.id.showMentions:
 			updateTimelineUI(TwitterAccount.MENTIONS);
 			new GetMentionsStatus().execute();
+			break;
+			
+		case R.id.newStatus:
+			Intent intent = new Intent(this, NewTweetActivity.class);
+			startActivity(intent);
 			break;
 			
 		default:
