@@ -20,6 +20,7 @@ import android.widget.AbsListView.OnScrollListener;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Toast;
 
 import com.company.tweeter.accountmanager.Account;
 import com.company.tweeter.accountmanager.AccountManager;
@@ -153,8 +154,7 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 						dbHelper.addStatus(status, TwitterAccount.TIMELINE);
 					}
 				} catch (TwitterException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
 				}
 			}
 			
@@ -194,7 +194,7 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 					}
 				} catch (TwitterException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
 				}
 			}
 			

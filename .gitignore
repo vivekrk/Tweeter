@@ -78,3 +78,23 @@ bin/classes/com/company/tweeter/R$anim.class
 bin/classes/com/company/tweeter/TimelineActivity$GetTimelineStatus.class
 
 bin/classes/com/company/tweeter/TimelineActivity$GetMentionsStatus.class
+
+bin/res/drawable-mdpi/tweet_button_unselected.png
+
+bin/res/drawable-mdpi/tweet_button_selected.png
+
+bin/res/drawable-mdpi/mentions_selected.png
+
+bin/res/drawable-ldpi/tweet_button_unselected.png
+
+bin/res/drawable-ldpi/tweet_button_selected.png
+
+bin/res/drawable-ldpi/mentions_selected.png
+
+bin/res/drawable-hdpi/tweet_button_unselected.png
+
+bin/res/drawable-hdpi/tweet_button_selected.png
+
+bin/res/drawable-hdpi/mentions_selected.png
+
+gen/com/company/tweeter/R.java

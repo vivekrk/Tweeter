@@ -1,11 +1,13 @@
 package com.company.tweeter.accountmanager;
 
+import twitter4j.DirectMessage;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
+import twitter4j.api.DirectMessageMethods;
 import twitter4j.api.TimelineMethods;
 import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
@@ -13,11 +15,12 @@ import android.util.Log;
 
 import com.company.tweeter.Constants;
 
-public class TwitterAccount extends Account implements TimelineMethods {
+public class TwitterAccount extends Account implements TimelineMethods, DirectMessageMethods {
 	private Twitter twitter;
 	
 	public static final int TIMELINE = 1;
 	public static final int MENTIONS = 2;
+	public static final int DIRECT_MESSAGES = 3;
 	
 	private RequestToken requestToken = null;
 	
@@ -191,6 +194,52 @@ public class TwitterAccount extends Account implements TimelineMethods {
 
 	public ResponseList<Status> getUserTimeline(long arg0, Paging arg1)
 			throws TwitterException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ResponseList<DirectMessage> getDirectMessages()
+			throws TwitterException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ResponseList<DirectMessage> getDirectMessages(Paging paging)
+			throws TwitterException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ResponseList<DirectMessage> getSentDirectMessages()
+			throws TwitterException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ResponseList<DirectMessage> getSentDirectMessages(Paging paging)
+			throws TwitterException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public DirectMessage sendDirectMessage(String screenName, String text)
+			throws TwitterException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public DirectMessage sendDirectMessage(long userId, String text)
+			throws TwitterException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public DirectMessage destroyDirectMessage(long id) throws TwitterException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public DirectMessage showDirectMessage(long id) throws TwitterException {
 		// TODO Auto-generated method stub
 		return null;
 	}

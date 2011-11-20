@@ -11,7 +11,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.company.tweeter.Constants;
-import com.company.tweeter.accountmanager.TwitterAccount;
 
 public class TweeterDbHelper extends SQLiteOpenHelper {
 
