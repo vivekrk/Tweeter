@@ -110,3 +110,5 @@ bin/classes/com/company/tweeter/NewTweetActivity$UpdateStatus.class
 gen/com/company/tweeter/R.java
 
 .DS_Store
+
+project.properties

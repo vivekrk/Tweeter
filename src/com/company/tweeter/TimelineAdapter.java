@@ -1,6 +1,9 @@
 package com.company.tweeter;
 
+import java.util.Date;
 import java.util.Hashtable;
+
+import twitter4j.util.TimeSpanConverter;
 
 import android.app.Activity;
 import android.database.Cursor;
@@ -62,7 +65,14 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 			}
 			
 			username.setText(usernameString);
-			time.setText(data.getString(data.getColumnIndex(Constants.CREATED_TIME)));
+			
+			String dateString = data.getString(data.getColumnIndex(Constants.CREATED_TIME));
+			long date = Date.parse(dateString);
+			
+			TimeSpanConverter convertor = new TimeSpanConverter();
+			
+			time.setText(convertor.toTimeSpanString(date));
+			
 			tweetMessage.setText(data.getString(data.getColumnIndex(Constants.TWEET)));
 			retweetedBy.setText(data.getString(data.getColumnIndex(Constants.RETWEETED_BY)));
 			

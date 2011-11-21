@@ -3,6 +3,7 @@ package com.company.tweeter.database;
 import java.util.Date;
 
 import twitter4j.Status;
+import twitter4j.util.TimeSpanConverter;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
