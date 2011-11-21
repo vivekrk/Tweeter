@@ -83,6 +83,7 @@ public class NewTweetActivity extends Activity implements OnClickListener {
 		
 		@Override
 		protected void onPostExecute(Void result) {
+			setResult(RESULT_OK);
 			finish();
 			super.onPostExecute(result);
 		}

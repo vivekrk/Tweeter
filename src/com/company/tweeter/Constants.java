@@ -26,4 +26,7 @@ public class Constants {
 
 	public static final String TIMELINE = "timeline";
 	
+	
+	public static final int NEW_TWEET = 100;
+	
 }

@@ -31,8 +31,8 @@ import com.markupartist.android.widget.PullToRefreshListView;
 import com.markupartist.android.widget.PullToRefreshListView.OnRefreshListener;
 
 public class TimelineActivity extends Activity implements OnScrollListener, OnClickListener {
-    /** Called when the activity is first created. */
-	
+	/** Called when the activity is first created. */
+
 	private AccountManager manager;
 	private Account account;
 	
@@ -243,10 +243,10 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
     				
     				String oAuthVerifier = uri.getQueryParameter(Constants.OAUTH_VERIFIER);
     				AccessToken token;
-						token = account.getAccessToken(oAuthVerifier);
-						Log.d(Constants.TAG, token.getToken());
-						account.setAccessToken(token);
-						account.writeTokenToPrefs(token);
+    				token = account.getAccessToken(oAuthVerifier);
+    				Log.d(Constants.TAG, token.getToken());
+    				account.setAccessToken(token);
+    				account.writeTokenToPrefs(token);
     				
     				setContentView(R.layout.timeline_layout);
     				initializeUI();
@@ -260,7 +260,7 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
     		public void onReceivedError(WebView view, int errorCode,
     				String description, String failingUrl) {
     			super.onReceivedError(view, errorCode, description, failingUrl);
-//    			Toast.makeText(getApplicationContext(), description, Toast.LENGTH_LONG).show();
+    			Toast.makeText(getApplicationContext(), description, Toast.LENGTH_LONG).show();
     			Log.d(Constants.TAG, "onReceivedError: " + description);
     		}
     	});
@@ -305,13 +305,29 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 			
 		case R.id.newStatus:
 			Intent intent = new Intent(this, NewTweetActivity.class);
-			startActivity(intent);
+			startActivityForResult(intent, Constants.NEW_TWEET);
 			break;
 			
 		default:
 			break;
 		}
 		
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (requestCode == Constants.NEW_TWEET) {
+			
+			if (resultCode == RESULT_OK) {
+				Toast.makeText(getApplicationContext(), "RESULT_OK",
+						Toast.LENGTH_LONG).show();
+			}
+			if(resultCode == RESULT_CANCELED) {
+				Toast.makeText(getApplicationContext(), "RESULT_CANCELED",
+						Toast.LENGTH_LONG).show();
+			}
+		}
 	}
     
 }

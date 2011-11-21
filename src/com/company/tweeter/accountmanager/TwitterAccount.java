@@ -39,13 +39,13 @@ public class TwitterAccount extends Account implements TimelineMethods, DirectMe
 	}
 	
 	public RequestToken getRequestToken() {
-		Log.d(Constants.TAG, "Before getOAuthRequestToken");
 		try {
 			requestToken = twitter.getOAuthRequestToken(Constants.CALLBACK_URL);
+			Log.d(Constants.TAG, requestToken.getToken());
 		} catch (TwitterException e) {
 			e.printStackTrace();
 		}
-		Log.d(Constants.TAG, requestToken.getToken());
+		
 		return requestToken;
 	}
 	
@@ -61,7 +61,6 @@ public class TwitterAccount extends Account implements TimelineMethods, DirectMe
 		try {
 			aToken = twitter.getOAuthAccessToken(requestToken, oAuthVerifier);
 		} catch (TwitterException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		Log.d(Constants.TAG, "after getOAuthAccessToken");
