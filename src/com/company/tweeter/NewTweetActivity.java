@@ -2,11 +2,15 @@ package com.company.tweeter;
 
 import twitter4j.TwitterException;
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,10 +19,11 @@ import com.company.tweeter.accountmanager.Account;
 import com.company.tweeter.accountmanager.AccountManager;
 import com.company.tweeter.accountmanager.TwitterAccount;
 
-public class NewTweetActivity extends Activity implements OnClickListener {
+public class NewTweetActivity extends Activity implements OnClickListener, TextWatcher {
 	
-	private TextView newTweetTextField;
+	private EditText newTweetTextField;
 	private ImageButton newTweetButton;
+	private TextView letterCount;
 	
 	private AccountManager manager;
 	private Account account;
@@ -38,10 +43,13 @@ public class NewTweetActivity extends Activity implements OnClickListener {
 	}
 
 	private void initializeUI() {
-		newTweetTextField = (TextView) findViewById(R.id.newTweetTextField);
+		newTweetTextField = (EditText) findViewById(R.id.newTweetTextField);
+		newTweetTextField.addTextChangedListener(this);
 		
 		newTweetButton = (ImageButton) findViewById(R.id.newTweetButton);
 		newTweetButton.setOnClickListener(this);
+		
+		letterCount = (TextView) findViewById(R.id.letterCount);
 	}
 
 	public void onClick(View v) {
@@ -88,6 +96,33 @@ public class NewTweetActivity extends Activity implements OnClickListener {
 			super.onPostExecute(result);
 		}
 		
+	}
+
+	public void afterTextChanged(Editable s) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void beforeTextChanged(CharSequence s, int start, int count,
+			int after) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onTextChanged(CharSequence s, int start, int before, int count) {
+		int charCount = newTweetTextField.getText().length();
+		
+		letterCount.setTextColor(Color.GREEN);
+		
+		if(charCount > 100) {
+			letterCount.setTextColor(Color.YELLOW);
+		}
+		
+		if(charCount > 140) {
+			charCount = 140 - charCount;
+			letterCount.setTextColor(Color.RED);
+		}
+		letterCount.setText(Integer.toString(charCount));
 	}
 	
 }
