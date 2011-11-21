@@ -42,6 +42,9 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 	
 	private Cursor data;
 	
+	private boolean isFetchingTimeline = false;
+	private boolean isFetchingMentions = false;
+	
 	private ListView timelineList;
 //	private ImageView userImageView;
 //	private TextView username;
@@ -139,8 +142,8 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
     	((PullToRefreshListView) timelineList).setOnRefreshListener(new OnRefreshListener() {
 			
 			public void onRefresh() {
-				// TODO Auto-generated method stub
 				new GetTimelineStatus().execute();
+				new GetMentionsStatus().execute();
 			}
 		});
     	
@@ -154,12 +157,14 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 			
 			if(account instanceof TwitterAccount) {
 				try {
+					isFetchingTimeline = true;
+					Log.d(Constants.TAG, "Inside GetTimelineStatus AsyncTask");
 					newStatuses = ((TwitterAccount) account).getHomeTimeline();
 					for (twitter4j.Status status : newStatuses) {
 						dbHelper.addStatus(status, TwitterAccount.TIMELINE);
 					}
 				} catch (TwitterException e) {
-					Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+					Log.d(Constants.TAG, e.getErrorMessage());
 				}
 			}
 			
@@ -176,8 +181,8 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 			else {
 				updateTimelineUI(TwitterAccount.TIMELINE);
 			}
-			
-			Log.d(Constants.TAG, "Fetching new data");
+			isFetchingTimeline = false;
+			Log.d(Constants.TAG, "Fetching new statuses");
 			
 			((PullToRefreshListView) timelineList).onRefreshComplete();
 			super.onPostExecute(result);
@@ -193,13 +198,14 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 			
 			if(account instanceof TwitterAccount) {
 				try {
+					isFetchingMentions = true;
+					Log.d(Constants.TAG, "Inside GetMentionsStatus AsyncTask");
 					mentions = ((TwitterAccount) account).getMentions();
 					for (twitter4j.Status status : mentions) {
 						dbHelper.addStatus(status, TwitterAccount.MENTIONS);
 					}
 				} catch (TwitterException e) {
-					// TODO Auto-generated catch block
-					Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+					Log.d(Constants.TAG, e.getErrorMessage());
 				}
 			}
 			
@@ -216,7 +222,9 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 				updateTimelineUI(TwitterAccount.MENTIONS);
 			}
 			
-			Log.d(Constants.TAG, "Fetching new data");
+			isFetchingMentions = false;
+			
+			Log.d(Constants.TAG, "Fetching new mentions");
 			
 			((PullToRefreshListView) timelineList).onRefreshComplete();
 			super.onPostExecute(result);
@@ -295,12 +303,16 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 		switch (v.getId()) {
 		case R.id.showTweets:
 			updateTimelineUI(TwitterAccount.TIMELINE);
-			new GetTimelineStatus().execute();
+			if(!isFetchingTimeline) {
+				new GetTimelineStatus().execute();
+			}
 			break;
 			
 		case R.id.showMentions:
 			updateTimelineUI(TwitterAccount.MENTIONS);
-			new GetMentionsStatus().execute();
+			if(!isFetchingMentions) {
+				new GetMentionsStatus().execute();
+			}
 			break;
 			
 		case R.id.newStatus:
