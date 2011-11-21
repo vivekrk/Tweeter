@@ -322,6 +322,7 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 			if (resultCode == RESULT_OK) {
 				Toast.makeText(getApplicationContext(), "RESULT_OK",
 						Toast.LENGTH_LONG).show();
+				adapter.notifyDataSetChanged();
 			}
 			if(resultCode == RESULT_CANCELED) {
 				Toast.makeText(getApplicationContext(), "RESULT_CANCELED",
