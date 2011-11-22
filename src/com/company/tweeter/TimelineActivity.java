@@ -340,6 +340,8 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 	public void onItemClick(AdapterView<?> view, View v, int position, long id) {
 		// TODO Auto-generated method stub
 		Log.d(Constants.TAG, "Item at position " + position + " selected");
+		Intent intent = new Intent(getApplicationContext(), TweetDetailsActivity.class);
+		startActivity(intent);
 	}
     
 }
