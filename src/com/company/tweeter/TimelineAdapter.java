@@ -39,22 +39,38 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 		
 	}
 	
+	static class ViewHolder {
+		TextView username;
+		TextView time;
+		TextView tweetMessage;
+		TextView retweetedBy;
+		
+		ImageView userProfileImageView;
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		// TODO Auto-generated method stub
-		View v = convertView;
-		if(v == null) {
+		ViewHolder holder;
+		
+		if(convertView == null) {
 			LayoutInflater inflater = activity.getLayoutInflater();
-			v = inflater.inflate(R.layout.tweet_row, null);
+			convertView = inflater.inflate(R.layout.tweet_row, null);
+			
+			holder = new ViewHolder();
+			
+			holder.username = (TextView) convertView.findViewById(R.id.username);
+			holder.time = (TextView) convertView.findViewById(R.id.time);
+			holder.tweetMessage = (TextView) convertView.findViewById(R.id.tweetMessage);
+			holder.retweetedBy = (TextView) convertView.findViewById(R.id.retweetedBy);
+			holder.userProfileImageView = (ImageView) convertView.findViewById(R.id.userImageView);
+			
+			convertView.setTag(holder);
 		}
 		
-		TextView username = (TextView) v.findViewById(R.id.username);
-		TextView time = (TextView) v.findViewById(R.id.time);
-		TextView tweetMessage = (TextView) v.findViewById(R.id.tweetMessage);
-		TextView retweetedBy = (TextView) v.findViewById(R.id.retweetedBy);
-		
-		ImageView userProfileImageView = (ImageView) v.findViewById(R.id.userImageView);
+		else {
+			holder = (ViewHolder) convertView.getTag();
+		}
 		
 		if(data.moveToPosition(position)) {
 			String usernameString = data.getString(data.getColumnIndex(Constants.USERNAME));
@@ -64,22 +80,22 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 				imageUrlHastable.put(usernameString, imageUrl);
 			}
 			
-			username.setText(usernameString);
+			holder.username.setText(usernameString);
 			
 			String dateString = data.getString(data.getColumnIndex(Constants.CREATED_TIME));
 			long date = Date.parse(dateString);
 			
 			TimeSpanConverter convertor = new TimeSpanConverter();
 			
-			time.setText(convertor.toTimeSpanString(date));
+			holder.time.setText(convertor.toTimeSpanString(date));
 			
-			tweetMessage.setText(data.getString(data.getColumnIndex(Constants.TWEET)));
-			retweetedBy.setText(data.getString(data.getColumnIndex(Constants.RETWEETED_BY)));
+			holder.tweetMessage.setText(data.getString(data.getColumnIndex(Constants.TWEET)));
+			holder.retweetedBy.setText(data.getString(data.getColumnIndex(Constants.RETWEETED_BY)));
 			
 			String imagePath = cacheManager.getImageForKey(usernameString);
 			
 			if(imagePath == null) {
-				userProfileImageView.setImageResource(R.drawable.ic_launcher);
+				holder.userProfileImageView.setImageResource(R.drawable.ic_launcher);
 //				Log.d(Constants.TAG, "Now downloading image for..." + usernameString);
 //				Log.d(Constants.TAG, "###########");
 				ImageDownloader downloader = new ImageDownloader();
@@ -97,12 +113,12 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 //				Animation fade = AnimationUtils.loadAnimation(activity, R.anim.fade);
 				
 				if(bm != null) {
-					userProfileImageView.setImageBitmap(ImageHelper
+					holder.userProfileImageView.setImageBitmap(ImageHelper
 							.getRoundedCornerBitmap(bm));
 				}
 				
 				else {
-					userProfileImageView.setImageResource(R.drawable.ic_launcher);
+					holder.userProfileImageView.setImageResource(R.drawable.ic_launcher);
 				}
 
 //				userProfileImageView.setAnimation(fade);
@@ -110,7 +126,7 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 			
 		}
 		
-		return v;
+		return convertView;
 	}
 	
 	private Bitmap getImageBitmapFromPath(String imagePath) {
