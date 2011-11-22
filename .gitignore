@@ -112,3 +112,5 @@ gen/com/company/tweeter/R.java
 .DS_Store
 
 project.properties
+
+bin/classes/com/company/tweeter/TimelineAdapter$ViewHolder.class

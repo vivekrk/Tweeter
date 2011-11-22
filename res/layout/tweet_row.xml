@@ -57,7 +57,6 @@
 
             <TextView android:id="@+id/tweetMessage"
                 android:layout_width="match_parent"
-                android:autoLink="all"
                 android:layout_height="match_parent"
                 android:textColor="@android:color/black"/>
         </LinearLayout>

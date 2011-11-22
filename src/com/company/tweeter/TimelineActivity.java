@@ -18,6 +18,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -30,7 +32,7 @@ import com.company.tweeter.database.TweeterDbHelper;
 import com.markupartist.android.widget.PullToRefreshListView;
 import com.markupartist.android.widget.PullToRefreshListView.OnRefreshListener;
 
-public class TimelineActivity extends Activity implements OnScrollListener, OnClickListener {
+public class TimelineActivity extends Activity implements OnScrollListener, OnClickListener, OnItemClickListener {
 	/** Called when the activity is first created. */
 
 	private AccountManager manager;
@@ -46,11 +48,6 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 	private boolean isFetchingMentions = false;
 	
 	private ListView timelineList;
-//	private ImageView userImageView;
-//	private TextView username;
-//	private TextView time;
-//	private TextView tweetText;
-//	private TextView retweetedBy;
 	
 	private ImageButton showTweets;
 	private ImageButton showMentions;
@@ -92,6 +89,7 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
     
 	private void updateTimelineUI(int timelineType) {
 		String selection = null;
+		adapter = null;
 		switch (timelineType) {
 		case TwitterAccount.TIMELINE:
 			selection = Constants.TIMELINE + "=" + "'" + TwitterAccount.TIMELINE + "'";
@@ -123,11 +121,6 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 	
 	private void initializeUI() {
     	timelineList = (PullToRefreshListView) findViewById(R.id.tweetList);
-//    	userImageView = (ImageView) findViewById(R.id.userImageView);
-//    	username = (TextView) findViewById(R.id.username);
-//    	time = (TextView) findViewById(R.id.time);
-//    	tweetText = (TextView) findViewById(R.id.tweetMessage);
-//    	retweetedBy = (TextView) findViewById(R.id.retweetedBy);
     	
     	newTweet = (ImageButton) findViewById(R.id.newStatus);
     	newTweet.setOnClickListener(this);
@@ -139,6 +132,7 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
     	showMentions.setOnClickListener(this);
     	
     	timelineList.setOnScrollListener(this);
+    	timelineList.setOnItemClickListener(this);
     	((PullToRefreshListView) timelineList).setOnRefreshListener(new OnRefreshListener() {
 			
 			public void onRefresh() {
@@ -341,6 +335,11 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 						Toast.LENGTH_LONG).show();
 			}
 		}
+	}
+
+	public void onItemClick(AdapterView<?> view, View v, int position, long id) {
+		// TODO Auto-generated method stub
+		Log.d(Constants.TAG, "Item at position " + position + " selected");
 	}
     
 }
