@@ -34,7 +34,7 @@ public class TweetDetailsActivity extends Activity {
 		
 		setStatusInfo(getIntent());
 	}
-
+	//Set the Status related details
 	private void setStatusInfo(Intent intent) {
 		Bundle data = intent.getExtras();
 		friendScreenname.setText(data.getString(Constants.USERNAME));
