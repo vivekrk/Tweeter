@@ -62,6 +62,7 @@
                 android:id="@+id/statusMessage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:autoLink="all"
                 android:text="Medium Text"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 

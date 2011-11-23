@@ -114,3 +114,5 @@ gen/com/company/tweeter/R.java
 project.properties
 
 bin/classes/com/company/tweeter/TimelineAdapter$ViewHolder.class
+
+project.properties
