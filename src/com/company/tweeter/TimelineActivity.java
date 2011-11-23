@@ -23,6 +23,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.company.tweeter.accountmanager.Account;
@@ -338,9 +339,16 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 	}
 
 	public void onItemClick(AdapterView<?> view, View v, int position, long id) {
-		// TODO Auto-generated method stub
-		Log.d(Constants.TAG, "Item at position " + position + " selected");
 		Intent intent = new Intent(getApplicationContext(), TweetDetailsActivity.class);
+		
+		Bundle extras = new Bundle();
+		extras.putString(Constants.USERNAME, ((TextView) v.findViewById(R.id.username)).getText().toString());
+		extras.putString(Constants.TWEET, ((TextView) v.findViewById(R.id.tweetMessage)).getText().toString());
+		extras.putString(Constants.CREATED_TIME, ((TextView) v.findViewById(R.id.time)).getText().toString());
+		
+		intent.putExtras(extras);
+		
+		
 		startActivity(intent);
 	}
     
