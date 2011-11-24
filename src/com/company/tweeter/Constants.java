@@ -1,5 +1,6 @@
 package com.company.tweeter;
 
+
 public class Constants {
 	public static final String TAG = "Tweeter";
 	

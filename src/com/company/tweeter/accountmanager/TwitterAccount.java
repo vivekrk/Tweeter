@@ -38,38 +38,22 @@ public class TwitterAccount extends Account implements TimelineMethods, DirectMe
 		return twitter;
 	}
 	
-	public RequestToken getRequestToken() {
-		try {
-			requestToken = twitter.getOAuthRequestToken(Constants.CALLBACK_URL);
-			Log.d(Constants.TAG, requestToken.getToken());
-		} catch (TwitterException e) {
-			e.printStackTrace();
-		}
-		
+	public RequestToken getRequestToken() throws TwitterException {
+		requestToken = twitter.getOAuthRequestToken(Constants.CALLBACK_URL);
 		return requestToken;
 	}
 	
-	public String getAuthenticationUrl() {
+	public String getAuthenticationUrl() throws TwitterException {
 		RequestToken token = getRequestToken();
 		return token.getAuthenticationURL();
 	}
 	
-	public AccessToken getAccessToken(String oAuthVerifier) {
-		Log.d(Constants.TAG, "getAccessToken start");
-		Log.d(Constants.TAG, requestToken.getToken());
-		AccessToken aToken = null;
-		try {
-			aToken = twitter.getOAuthAccessToken(requestToken, oAuthVerifier);
-		} catch (TwitterException e) {
-			e.printStackTrace();
-		}
-		Log.d(Constants.TAG, "after getOAuthAccessToken");
-		return aToken;
+	public AccessToken getAccessToken(String oAuthVerifier) throws TwitterException {
+		return twitter.getOAuthAccessToken(requestToken, oAuthVerifier);
 	}
 	
 	
 	public void setAccessToken(AccessToken accessToken) {
-		Log.d(Constants.TAG, "setAccessToken called");
 		twitter.setOAuthAccessToken(accessToken);
 	}
 

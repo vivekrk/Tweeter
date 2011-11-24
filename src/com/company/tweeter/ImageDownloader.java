@@ -8,12 +8,16 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.UnknownHostException;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
 
 import android.app.Activity;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -41,11 +45,13 @@ class ImageDownloader extends AsyncTask<Hashtable<String, String>, Integer, Void
 		
 		try {
 			for (int i = 0; i < params.length; i++) {
-				Set<String> usernamesSet = params[i].keySet();
-				Iterator<String> iterator = usernamesSet.iterator();
+				Enumeration<String> keys = params[i].keys();
 				
-				if(iterator.hasNext()) {
-					usernameString = iterator.next();
+//				Set<String> usernamesSet = params[i].keySet();
+//				Iterator<String> iterator = usernamesSet.iterator();
+				
+				if(keys.hasMoreElements()) {
+					usernameString = keys.nextElement();
 					imageSavePath = activity.getDir("profile_image_cache", Context.MODE_PRIVATE).getAbsolutePath()
 							+ "/" + usernameString + ".png";
 					imageUrl = new URL(params[i].get(usernameString));
@@ -58,12 +64,13 @@ class ImageDownloader extends AsyncTask<Hashtable<String, String>, Integer, Void
 					saveImageFile(is, imageSavePath);
 					
 					manager.setImageForKey(usernameString, imageSavePath);
-//					Log.d(Constants.TAG, "Download complete: " + usernameString);
 				}
 				
 			}
 
 		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -115,12 +122,30 @@ class ImageDownloader extends AsyncTask<Hashtable<String, String>, Integer, Void
 	}
 
 	public void setContext(Activity activity) {
-		// TODO Auto-generated method stub
 		this.activity = activity;
 	}
 	
 	public void setOnDownloadCompletedListener(OnDownloadCompletedListener listener) {
 		onDownloadCompletedListener = listener;
+	}
+	
+	public static boolean isNetworkConnected(Context context) {
+		ConnectivityManager connMgr = (ConnectivityManager)
+				context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		if (null == connMgr) {
+			return false;
+		} else {
+			NetworkInfo[] info = connMgr.getAllNetworkInfo();  
+			if (info != null) {  
+				for (int i = 0; i < info.length; i++) {
+					if (info[i].getState() == NetworkInfo.State.CONNECTED) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+
 	}
 	
 	public interface OnDownloadCompletedListener {

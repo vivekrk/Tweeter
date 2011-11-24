@@ -6,11 +6,14 @@ import twitter4j.Status;
 import twitter4j.TwitterException;
 import twitter4j.auth.AccessToken;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -43,10 +46,11 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 	
 	private SimpleCursorAdapter adapter;
 	
+	private int activeFeed = TwitterAccount.TIMELINE;
+	
 	private Cursor data;
 	
-	private boolean isFetchingTimeline = false;
-	private boolean isFetchingMentions = false;
+	private boolean isFetchingData = false;
 	
 	private ListView timelineList;
 	
@@ -74,14 +78,18 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
         	initializeUI();
         	
         	updateTimelineUI(TwitterAccount.TIMELINE);
-        	new GetTimelineStatus().execute();
+        	new GetStatuses().execute();
         } else {
-        	login();
+        	try {
+				login();
+			} catch (TwitterException e) {
+				Log.d(Constants.TAG, "Login failed");
+			}
         	Log.d(Constants.TAG, "user is not logged in");
         }
     }
     
-    /**
+	/**
      * Updates the status messages in the ListView. 
      * 
      * The cursor data is set to the SimpleCursorAdapter and all the text field data is populated.
@@ -137,29 +145,40 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
     	((PullToRefreshListView) timelineList).setOnRefreshListener(new OnRefreshListener() {
 			
 			public void onRefresh() {
-				new GetTimelineStatus().execute();
-				new GetMentionsStatus().execute();
+				if(ImageDownloader.isNetworkConnected(TimelineActivity.this)) {
+					new GetStatuses().execute();
+				}
+				else {
+					Toast.makeText(getApplicationContext(), "Connection error", Toast.LENGTH_LONG).show();
+					((PullToRefreshListView) timelineList).onRefreshComplete();
+				}
 			}
 		});
     	
     }
 	
-	class GetTimelineStatus extends AsyncTask<Void, Integer, List<Status>> {
+	class GetStatuses extends AsyncTask<Void, Integer, List<Status>> {
 
 		@Override
 		protected List<twitter4j.Status> doInBackground(Void... params) {
 			List<twitter4j.Status> newStatuses = null;
+			List<twitter4j.Status> newMentions = null;
 			
 			if(account instanceof TwitterAccount) {
 				try {
-					isFetchingTimeline = true;
+					isFetchingData = true;
 					Log.d(Constants.TAG, "Inside GetTimelineStatus AsyncTask");
 					newStatuses = ((TwitterAccount) account).getHomeTimeline();
+					newMentions = ((TwitterAccount) account).getMentions();
 					for (twitter4j.Status status : newStatuses) {
 						dbHelper.addStatus(status, TwitterAccount.TIMELINE);
 					}
+					
+					for (twitter4j.Status status : newMentions) {
+						dbHelper.addStatus(status, TwitterAccount.MENTIONS);
+					}
 				} catch (TwitterException e) {
-					Log.d(Constants.TAG, e.getErrorMessage());
+					Log.d(Constants.TAG, "Twitter exception");
 				}
 			}
 			
@@ -174,9 +193,21 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 				adapter.notifyDataSetChanged();
 			}
 			else {
-				updateTimelineUI(TwitterAccount.TIMELINE);
+				switch (activeFeed) {
+				case TwitterAccount.TIMELINE:
+					updateTimelineUI(TwitterAccount.TIMELINE);
+					break;
+					
+				case TwitterAccount.MENTIONS:
+					updateTimelineUI(TwitterAccount.MENTIONS);
+					break;
+
+				default:
+					break;
+				}
+				
 			}
-			isFetchingTimeline = false;
+			isFetchingData = false;
 			Log.d(Constants.TAG, "Fetching new statuses");
 			
 			((PullToRefreshListView) timelineList).onRefreshComplete();
@@ -185,54 +216,14 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 		
 	}
     
-	class GetMentionsStatus extends AsyncTask<Void, Integer, List<Status>> {
-
-		@Override
-		protected List<twitter4j.Status> doInBackground(Void... params) {
-			List<twitter4j.Status> mentions = null;
-			
-			if(account instanceof TwitterAccount) {
-				try {
-					isFetchingMentions = true;
-					Log.d(Constants.TAG, "Inside GetMentionsStatus AsyncTask");
-					mentions = ((TwitterAccount) account).getMentions();
-					for (twitter4j.Status status : mentions) {
-						dbHelper.addStatus(status, TwitterAccount.MENTIONS);
-					}
-				} catch (TwitterException e) {
-					Log.d(Constants.TAG, e.getErrorMessage());
-				}
-			}
-			
-			return mentions;
-		}
-		
-		@Override
-		protected void onPostExecute(List<twitter4j.Status> result) {
-			if(adapter != null) {
-				data.requery();
-				adapter.notifyDataSetChanged();
-			}
-			else {
-				updateTimelineUI(TwitterAccount.MENTIONS);
-			}
-			
-			isFetchingMentions = false;
-			
-			Log.d(Constants.TAG, "Fetching new mentions");
-			
-			((PullToRefreshListView) timelineList).onRefreshComplete();
-			super.onPostExecute(result);
-		}
-	}
-	
 	/**
 	 * Check if the user is logged in by checking if there is a preference key related to the 
 	 * AccessToken. If not, then a WebView is displayed and authentication is completed and AccessToken is set.
 	 * The AccessToken is then written to the Preferences.
+	 * @throws TwitterException 
 	 */
 	
-    private void login() {
+    private void login() throws TwitterException {
     	WebView webView = new WebView(this);
     	webView.getSettings().setJavaScriptEnabled(true);
     	webView.setWebViewClient(new WebViewClient() {
@@ -241,20 +232,23 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
     			super.onPageFinished(view, url);
     			if(url.contains(Constants.CALLBACK_URL)) {
     				Uri uri = Uri.parse(url);
-//    				Toast.makeText(getApplicationContext(), url, Toast.LENGTH_LONG).show();
-    				Log.d(Constants.TAG, "onPageFinished: " + url);
     				
     				String oAuthVerifier = uri.getQueryParameter(Constants.OAUTH_VERIFIER);
-    				AccessToken token;
-    				token = account.getAccessToken(oAuthVerifier);
-    				Log.d(Constants.TAG, token.getToken());
+    				AccessToken token = null;
+    				try {
+						token = account.getAccessToken(oAuthVerifier);
+					} catch (TwitterException e) {
+						// TODO Auto-generated catch block
+						Log.d(Constants.TAG, "Failed to get Access Token");
+					}
+    				
     				account.setAccessToken(token);
     				account.writeTokenToPrefs(token);
     				
     				setContentView(R.layout.timeline_layout);
     				initializeUI();
     				
-    				new GetTimelineStatus().execute();
+    				new GetStatuses().execute();
     				
     			}
     		}
@@ -276,7 +270,10 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
     protected void onDestroy() {
     	// TODO Auto-generated method stub
     	super.onDestroy();
-    	data.close();
+    	if(data != null && !data.isClosed()) {
+    		data.close();
+    	}
+    	
     	dbHelper.close();
     }
 
@@ -297,16 +294,18 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.showTweets:
+			activeFeed = TwitterAccount.TIMELINE;
 			updateTimelineUI(TwitterAccount.TIMELINE);
-			if(!isFetchingTimeline) {
-				new GetTimelineStatus().execute();
+			if(!isFetchingData) {
+				new GetStatuses().execute();
 			}
 			break;
 			
 		case R.id.showMentions:
+			activeFeed = TwitterAccount.MENTIONS;
 			updateTimelineUI(TwitterAccount.MENTIONS);
-			if(!isFetchingMentions) {
-				new GetMentionsStatus().execute();
+			if(!isFetchingData) {
+				new GetStatuses().execute();
 			}
 			break;
 			

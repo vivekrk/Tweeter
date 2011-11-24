@@ -4,11 +4,14 @@ import java.util.Date;
 import java.util.Hashtable;
 
 import twitter4j.util.TimeSpanConverter;
-
 import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -98,15 +101,21 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 				holder.userProfileImageView.setImageResource(R.drawable.ic_launcher);
 //				Log.d(Constants.TAG, "Now downloading image for..." + usernameString);
 //				Log.d(Constants.TAG, "###########");
-				ImageDownloader downloader = new ImageDownloader();
-				downloader.setContext(activity);
-				downloader.setOnDownloadCompletedListener(new OnDownloadCompletedListener() {
-					
-					public void onDownloadCompleted() {
-						notifyDataSetChanged();
-					}
-				});
-				downloader.execute(imageUrlHastable);
+				
+				if(ImageDownloader.isNetworkConnected(activity)) {
+					ImageDownloader downloader = new ImageDownloader();
+					downloader.setContext(activity);
+					downloader.setOnDownloadCompletedListener(new OnDownloadCompletedListener() {
+						
+						public void onDownloadCompleted() {
+							notifyDataSetChanged();
+						}
+					});
+					downloader.execute(imageUrlHastable);
+				}
+				else {
+					Log.d(Constants.TAG, "Offline");
+				}
 			}
 			else {
 				Bitmap bm = getImageBitmapFromPath(imagePath);
@@ -132,5 +141,5 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 	private Bitmap getImageBitmapFromPath(String imagePath) {
 		return BitmapFactory.decodeFile(imagePath);
 	}
-
+	
 }

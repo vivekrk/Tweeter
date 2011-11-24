@@ -5,6 +5,7 @@ import com.company.tweeter.Constants;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
+import twitter4j.TwitterException;
 import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
 
@@ -17,16 +18,18 @@ public abstract class Account {
 	 * Returns the request token for the account.
 	 * @return
 	 * RequestToken
+	 * @throws TwitterException 
 	 */
-	public abstract RequestToken getRequestToken();
+	public abstract RequestToken getRequestToken() throws TwitterException;
 	
 	/**
 	 * Returns the Authentication Url for the account.
 	 * @return
 	 * Url String which can be used to Authenticate the user.
+	 * @throws TwitterException 
 	 */
 	
-	public abstract String getAuthenticationUrl();
+	public abstract String getAuthenticationUrl() throws TwitterException;
 	
 	/**
 	 * Generates the Access Token for the account. This can be used to authenticate the account. 
@@ -34,8 +37,9 @@ public abstract class Account {
 	 * Verifier string which can be used for generating the AccessToken
 	 * @return
 	 * Returns the access token.
+	 * @throws TwitterException 
 	 */
-	public abstract AccessToken getAccessToken(String oAuthVerifier);
+	public abstract AccessToken getAccessToken(String oAuthVerifier) throws TwitterException;
 	
 	
 	/**
