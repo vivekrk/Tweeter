@@ -11,8 +11,6 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Set;
 
 import android.app.Activity;
 import android.content.Context;

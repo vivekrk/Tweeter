@@ -15,7 +15,6 @@ import twitter4j.api.StatusMethods;
 import twitter4j.api.TimelineMethods;
 import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
-import android.util.Log;
 
 import com.company.tweeter.Constants;
 

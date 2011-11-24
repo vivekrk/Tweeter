@@ -6,14 +6,11 @@ import twitter4j.Status;
 import twitter4j.TwitterException;
 import twitter4j.auth.AccessToken;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -191,15 +188,18 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 			if(adapter != null) {
 				data.requery();
 				adapter.notifyDataSetChanged();
+				timelineList.smoothScrollToPosition(1);
 			}
 			else {
 				switch (activeFeed) {
 				case TwitterAccount.TIMELINE:
 					updateTimelineUI(TwitterAccount.TIMELINE);
+					timelineList.smoothScrollToPosition(1);
 					break;
 					
 				case TwitterAccount.MENTIONS:
 					updateTimelineUI(TwitterAccount.MENTIONS);
+					timelineList.smoothScrollToPosition(1);
 					break;
 
 				default:
