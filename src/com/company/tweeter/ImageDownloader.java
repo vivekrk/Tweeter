@@ -45,9 +45,6 @@ class ImageDownloader extends AsyncTask<Hashtable<String, String>, Integer, Void
 			for (int i = 0; i < params.length; i++) {
 				Enumeration<String> keys = params[i].keys();
 				
-//				Set<String> usernamesSet = params[i].keySet();
-//				Iterator<String> iterator = usernamesSet.iterator();
-				
 				if(keys.hasMoreElements()) {
 					usernameString = keys.nextElement();
 					imageSavePath = activity.getDir("profile_image_cache", Context.MODE_PRIVATE).getAbsolutePath()
