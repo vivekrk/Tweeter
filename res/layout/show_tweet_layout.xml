@@ -1,83 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical" >
-        <LinearLayout 
-    android:id="@+id/friendInfoHeader"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal" >
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
 
-    <ImageView
-        android:id="@+id/friendProfileImage"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_margin="5dp"
-        android:scaleType="fitXY"
-        android:src="@drawable/ic_launcher" />
-
-    <RelativeLayout
-        android:id="@+id/friendInfo"
-        android:orientation="vertical"
+    <LinearLayout
+        android:id="@+id/friendInfoHeader"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="match_parent"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="horizontal" >
 
-        <TextView
-            android:id="@+id/friendName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingTop="8dp"
-            android:textStyle="bold"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:text="friendName" />
+        <ImageView
+            android:id="@+id/friendProfileImage"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_margin="5dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_launcher" />
 
-        <TextView
-            android:id="@+id/friendScreenName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/friendName"
-            android:text="friendScreenName" />
-
-		<TextView
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:layout_alignParentRight="true"
-		    android:layout_centerHorizontal="true"
-		    android:paddingTop="10dp"
-		    android:text=">" />
-        
-    </RelativeLayout>
-    </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/statusDetails"
-            android:padding="6dp"
+        <RelativeLayout
+            android:id="@+id/friendInfo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             android:orientation="vertical" >
 
             <TextView
-                android:id="@+id/statusMessage"
+                android:id="@+id/friendName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:autoLink="all"
-                android:text="Medium Text"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:paddingTop="8dp"
+                android:text="friendName"
+                android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/statusTime"
+                android:id="@+id/friendScreenName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TextView" />
+                android:layout_below="@id/friendName"
+                android:text="friendScreenName" />
 
             <TextView
-                android:id="@+id/statusRetweetedBy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TextView" />
+                android:layout_alignParentRight="true"
+                android:layout_centerHorizontal="true"
+                android:paddingTop="10dp"
+                android:text=">" />
+        </RelativeLayout>
+    </LinearLayout>
 
-        </LinearLayout>
+    <LinearLayout
+        android:id="@+id/statusDetails"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="10dp"
+        android:orientation="vertical"
+        android:padding="6dp" >
+
+        <TextView
+            android:id="@+id/statusMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="4dp"
+            android:autoLink="web"
+            android:text="Medium Text"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/statusTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="4dp"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/statusRetweetedBy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="4dp"
+            android:text="TextView" />
+    </LinearLayout>
 
 </LinearLayout>
