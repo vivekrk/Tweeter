@@ -81,10 +81,9 @@ public class TwitterAccount extends Account implements TimelineMethods, DirectMe
 		return twitter.getMentions();
 	}
 
-	public ResponseList<Status> getMentions(Paging arg0)
+	public ResponseList<Status> getMentions(Paging paging)
 			throws TwitterException {
-		// TODO Auto-generated method stub
-		return null;
+		return twitter.getMentions(paging);
 	}
 
 	public ResponseList<Status> getPublicTimeline() throws TwitterException {

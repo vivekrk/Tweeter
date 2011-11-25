@@ -2,6 +2,7 @@ package com.company.tweeter;
 
 import java.util.List;
 
+import twitter4j.Paging;
 import twitter4j.Status;
 import twitter4j.TwitterException;
 import twitter4j.auth.AccessToken;
@@ -55,6 +56,26 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 	private ImageButton showTweets;
 	private ImageButton showMentions;
 	private ImageButton newTweet;
+	
+	public long getLastFetchedStatusID() {
+		return lastFetchedStatusID;
+	}
+
+	public void setLastFetchedStatusID(long lastFetchedStatusID) {
+		this.lastFetchedStatusID = lastFetchedStatusID;
+	}
+
+	public long getLastFetchedMentionID() {
+		return lastFetchedMentionID;
+	}
+
+	public void setLastFetchedMentionID(long lastFetchedMentionID) {
+		this.lastFetchedMentionID = lastFetchedMentionID;
+	}
+
+
+	private long lastFetchedStatusID = 0;
+	private long lastFetchedMentionID = 0;
 	
 	private boolean isScrolling = false;
 	
@@ -173,13 +194,27 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 				try {
 					isFetchingData = true;
 					Log.d(Constants.TAG, "Inside GetTimelineStatus AsyncTask");
-					newStatuses = ((TwitterAccount) account).getHomeTimeline();
-					newMentions = ((TwitterAccount) account).getMentions();
+					
+					Paging homePaging = new Paging();
+					if(getLastFetchedStatusID() != 0) {
+						homePaging.setSinceId(getLastFetchedStatusID());
+					}
+					
+					
+					Paging mentionPaging = new Paging();
+					if(getLastFetchedMentionID() != 0) {
+						mentionPaging.setSinceId(getLastFetchedMentionID());
+					}
+					
+					newStatuses = ((TwitterAccount) account).getHomeTimeline(homePaging);
+					newMentions = ((TwitterAccount) account).getMentions(mentionPaging);
 					for (twitter4j.Status status : newStatuses) {
+						setLastFetchedStatusID(status.getId());
 						dbHelper.addStatus(status, TwitterAccount.TIMELINE);
 					}
 					
 					for (twitter4j.Status status : newMentions) {
+						setLastFetchedMentionID(status.getId());
 						dbHelper.addStatus(status, TwitterAccount.MENTIONS);
 					}
 				} catch (TwitterException e) {
