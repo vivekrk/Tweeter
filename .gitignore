@@ -118,3 +118,5 @@ bin/classes/com/company/tweeter/TimelineAdapter$ViewHolder.class
 project.properties
 
 bin/classes/com/company/tweeter/TimelineActivity$PollForData.class
+
+bin/classes/com/company/tweeter/TimelineActivity$GetStatuses.class

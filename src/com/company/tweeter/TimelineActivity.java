@@ -87,8 +87,8 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
         	initializeUI();
         	
         	updateTimelineUI(TwitterAccount.TIMELINE);
-        	new GetStatuses().execute(newPages);
-//        	new PollForData().execute();
+//        	new GetStatuses().execute(newPages);
+        	new PollForData().execute();
         } else {
         	try {
 				login();
@@ -261,8 +261,8 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
     				setContentView(R.layout.timeline_layout);
     				initializeUI();
     				
-//    				new PollForData().execute();
-    				new GetStatuses().execute(newPages);
+    				new PollForData().execute();
+//    				new GetStatuses().execute(newPages);
     				
     			}
     		}
@@ -366,12 +366,13 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 		protected Void doInBackground(Void... params) {
 			Log.d(Constants.TAG, "Inside doInBackground of PollData");
 			pollForNewData();
-			SystemClock.sleep(300000);
+			SystemClock.sleep(1800000);
 			return null;
 		}
 		
 		private void pollForNewData() {
 			if(!isFetchingData) {
+				SystemClock.sleep(180000);
 				new GetStatuses().execute(newPages);
 				isFetchingData = true;
 			}
