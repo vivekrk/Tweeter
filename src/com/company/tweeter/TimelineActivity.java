@@ -46,6 +46,7 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 	private SimpleCursorAdapter adapter;
 	
 	private int activeFeed = TwitterAccount.TIMELINE;
+	private int lastPageFetched = 1;
 	
 	private Cursor data;
 	
@@ -57,27 +58,8 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 	private ImageButton showMentions;
 	private ImageButton newTweet;
 	
-	public long getLastFetchedStatusID() {
-		return lastFetchedStatusID;
-	}
-
-	public void setLastFetchedStatusID(long lastFetchedStatusID) {
-		this.lastFetchedStatusID = lastFetchedStatusID;
-	}
-
-	public long getLastFetchedMentionID() {
-		return lastFetchedMentionID;
-	}
-
-	public void setLastFetchedMentionID(long lastFetchedMentionID) {
-		this.lastFetchedMentionID = lastFetchedMentionID;
-	}
-
-
-	private long lastFetchedStatusID = 0;
-	private long lastFetchedMentionID = 0;
-	
 	private boolean isScrolling = false;
+	private Paging newPages;
 	
     public boolean isScrolling() {
 		return isScrolling;
@@ -93,6 +75,8 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
         manager = AccountManager.getInstance();
         account = manager.getAccount();
         
+        newPages = new Paging(1);
+        
         if(account.isUserLoggedIn(this)) {
         	Log.d(Constants.TAG, "user is logged in");
         	
@@ -103,8 +87,8 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
         	initializeUI();
         	
         	updateTimelineUI(TwitterAccount.TIMELINE);
-//        	new GetStatuses().execute();
-        	new PollForData().execute();
+        	new GetStatuses().execute(newPages);
+//        	new PollForData().execute();
         } else {
         	try {
 				login();
@@ -172,7 +156,7 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 			
 			public void onRefresh() {
 				if(ImageDownloader.isNetworkConnected(TimelineActivity.this)) {
-					new GetStatuses().execute();
+					new GetStatuses().execute(newPages);
 				}
 				else {
 					Toast.makeText(getApplicationContext(), "Connection error", Toast.LENGTH_LONG).show();
@@ -183,10 +167,10 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
     	
     }
 	
-	class GetStatuses extends AsyncTask<Void, Integer, List<Status>> {
+	class GetStatuses extends AsyncTask<Paging, Integer, List<Status>> {
 
 		@Override
-		protected List<twitter4j.Status> doInBackground(Void... params) {
+		protected List<twitter4j.Status> doInBackground(Paging... params) {
 			List<twitter4j.Status> newStatuses = null;
 			List<twitter4j.Status> newMentions = null;
 			
@@ -194,27 +178,13 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 				try {
 					isFetchingData = true;
 					Log.d(Constants.TAG, "Inside GetTimelineStatus AsyncTask");
-					
-					Paging homePaging = new Paging();
-					if(getLastFetchedStatusID() != 0) {
-						homePaging.setSinceId(getLastFetchedStatusID());
-					}
-					
-					
-					Paging mentionPaging = new Paging();
-					if(getLastFetchedMentionID() != 0) {
-						mentionPaging.setSinceId(getLastFetchedMentionID());
-					}
-					
-					newStatuses = ((TwitterAccount) account).getHomeTimeline(homePaging);
-					newMentions = ((TwitterAccount) account).getMentions(mentionPaging);
+						newStatuses = ((TwitterAccount) account).getHomeTimeline(params[0]);
+						newMentions = ((TwitterAccount) account).getMentions(params[0]);
 					for (twitter4j.Status status : newStatuses) {
-						setLastFetchedStatusID(status.getId());
 						dbHelper.addStatus(status, TwitterAccount.TIMELINE);
 					}
 					
 					for (twitter4j.Status status : newMentions) {
-						setLastFetchedMentionID(status.getId());
 						dbHelper.addStatus(status, TwitterAccount.MENTIONS);
 					}
 				} catch (TwitterException e) {
@@ -291,7 +261,8 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
     				setContentView(R.layout.timeline_layout);
     				initializeUI();
     				
-    				new PollForData().execute();
+//    				new PollForData().execute();
+    				new GetStatuses().execute(newPages);
     				
     			}
     		}
@@ -323,8 +294,13 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 	public void onScroll(AbsListView view, int firstVisibleItem,
 			int visibleItemCount, int totalItemCount) {
 		boolean loadMore = firstVisibleItem + visibleItemCount >= totalItemCount;
-		if(loadMore) {
+		if(loadMore && !isFetchingData ) {
 			Log.d(Constants.TAG, "Loading more tweets");
+			isFetchingData = true;
+			Paging oldPages = new Paging(lastPageFetched);
+			new GetStatuses().execute(oldPages);
+			Log.d(Constants.TAG, "Fetching page number: " + lastPageFetched);
+			lastPageFetched = lastPageFetched + 1;
 		}
 		
 	}
@@ -344,7 +320,7 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 			activeFeed = TwitterAccount.TIMELINE;
 			updateTimelineUI(TwitterAccount.TIMELINE);
 			if(!isFetchingData) {
-				new GetStatuses().execute();
+				new GetStatuses().execute(newPages);
 			}
 			break;
 			
@@ -352,7 +328,7 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 			activeFeed = TwitterAccount.MENTIONS;
 			updateTimelineUI(TwitterAccount.MENTIONS);
 			if(!isFetchingData) {
-				new GetStatuses().execute();
+				new GetStatuses().execute(newPages);
 			}
 			break;
 			
@@ -390,17 +366,22 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 		protected Void doInBackground(Void... params) {
 			Log.d(Constants.TAG, "Inside doInBackground of PollData");
 			pollForNewData();
-			SystemClock.sleep(15000);
+			SystemClock.sleep(300000);
 			return null;
 		}
 		
 		private void pollForNewData() {
-			new GetStatuses().execute();
+			if(!isFetchingData) {
+				new GetStatuses().execute(newPages);
+				isFetchingData = true;
+			}
+			
 		}
 		
 		@Override
 		protected void onPostExecute(Void result) {
 			Log.d(Constants.TAG, "Inside onPostExecute of PollData");
+			isFetchingData = false;
 			new PollForData().execute();
 			super.onPostExecute(result);
 		}
