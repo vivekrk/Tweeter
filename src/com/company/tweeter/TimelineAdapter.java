@@ -108,7 +108,11 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 					downloader.setOnDownloadCompletedListener(new OnDownloadCompletedListener() {
 						
 						public void onDownloadCompleted() {
-							notifyDataSetChanged();
+							if(activity instanceof TimelineActivity) {
+								if(!((TimelineActivity) activity).isScrolling()) {
+									notifyDataSetChanged();
+								}
+							}
 						}
 					});
 					downloader.execute(imageUrlHastable);

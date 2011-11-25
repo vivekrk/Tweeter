@@ -11,6 +11,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -55,7 +56,13 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 	private ImageButton showMentions;
 	private ImageButton newTweet;
 	
-    @Override
+	private boolean isScrolling = false;
+	
+    public boolean isScrolling() {
+		return isScrolling;
+	}
+
+	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
@@ -75,7 +82,8 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
         	initializeUI();
         	
         	updateTimelineUI(TwitterAccount.TIMELINE);
-        	new GetStatuses().execute();
+//        	new GetStatuses().execute();
+        	new PollForData().execute();
         } else {
         	try {
 				login();
@@ -187,19 +195,19 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 			
 			if(adapter != null) {
 				data.requery();
-				adapter.notifyDataSetChanged();
-				timelineList.smoothScrollToPosition(1);
+				if(!isScrolling()) {
+					adapter.notifyDataSetChanged();
+				}
+				
 			}
 			else {
 				switch (activeFeed) {
 				case TwitterAccount.TIMELINE:
 					updateTimelineUI(TwitterAccount.TIMELINE);
-					timelineList.smoothScrollToPosition(1);
 					break;
 					
 				case TwitterAccount.MENTIONS:
 					updateTimelineUI(TwitterAccount.MENTIONS);
-					timelineList.smoothScrollToPosition(1);
 					break;
 
 				default:
@@ -248,7 +256,7 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
     				setContentView(R.layout.timeline_layout);
     				initializeUI();
     				
-    				new GetStatuses().execute();
+    				new PollForData().execute();
     				
     			}
     		}
@@ -287,8 +295,12 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 	}
 
 	public void onScrollStateChanged(AbsListView view, int scrollState) {
-		// TODO Auto-generated method stub
-		
+		if(scrollState == SCROLL_STATE_FLING || scrollState == SCROLL_STATE_TOUCH_SCROLL) {
+			isScrolling = true;
+		}
+		else {
+			isScrolling = false;
+		}
 	}
 
 	public void onClick(View v) {
@@ -336,6 +348,29 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 			}
 		}
 	}
+	
+	class PollForData extends AsyncTask<Void, Integer, Void> {
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			Log.d(Constants.TAG, "Inside doInBackground of PollData");
+			pollForNewData();
+			SystemClock.sleep(15000);
+			return null;
+		}
+		
+		private void pollForNewData() {
+			new GetStatuses().execute();
+		}
+		
+		@Override
+		protected void onPostExecute(Void result) {
+			Log.d(Constants.TAG, "Inside onPostExecute of PollData");
+			new PollForData().execute();
+			super.onPostExecute(result);
+		}
+	}
+	
 
 	public void onItemClick(AdapterView<?> view, View v, int position, long id) {
 		Intent intent = new Intent(getApplicationContext(), TweetDetailsActivity.class);
