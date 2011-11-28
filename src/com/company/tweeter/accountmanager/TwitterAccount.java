@@ -230,8 +230,7 @@ public class TwitterAccount extends Account implements TimelineMethods, DirectMe
 	}
 
 	public Status showStatus(long id) throws TwitterException {
-		// TODO Auto-generated method stub
-		return null;
+		return twitter.showStatus(id);
 	}
 
 	public Status updateStatus(String status) throws TwitterException {
@@ -250,7 +249,6 @@ public class TwitterAccount extends Account implements TimelineMethods, DirectMe
 	}
 
 	public Status retweetStatus(long statusId) throws TwitterException {
-		// TODO Auto-generated method stub
 		return twitter.retweetStatus((long)statusId);
 	}
 
@@ -282,4 +280,5 @@ public class TwitterAccount extends Account implements TimelineMethods, DirectMe
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
 }

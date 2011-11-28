@@ -1,6 +1,7 @@
 package com.company.tweeter;
 
 import twitter4j.TwitterException;
+import twitter4j.User;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -83,6 +84,12 @@ public class TweetDetailsActivity extends Activity implements OnClickListener {
 		switch (v.getId()) {
 		case R.id.reply:
 			Toast.makeText(getApplicationContext(), "Reply clicked", Toast.LENGTH_LONG).show();
+			String replyToUser = null;
+			Intent intent = new Intent(this, NewTweetActivity.class);
+			replyToUser = (String) friendScreenname.getText();
+			
+			intent.putExtra(Constants.USERNAME, replyToUser);
+			startActivity(intent);
 			break;
 			
 		case R.id.retweet:
@@ -96,12 +103,15 @@ public class TweetDetailsActivity extends Activity implements OnClickListener {
 		}
 	}
 	
+	
 	class RetweetStatus extends AsyncTask<Long, Integer, Void> {
 
 		@Override
 		protected Void doInBackground(Long... params) {
 			try {
-				((TwitterAccount)account).retweetStatus(params[0]);
+				if(account instanceof TwitterAccount) {
+					((TwitterAccount)account).retweetStatus(params[0]);
+				}
 			} catch (TwitterException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

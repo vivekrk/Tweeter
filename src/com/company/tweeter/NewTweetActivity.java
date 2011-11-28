@@ -28,6 +28,8 @@ public class NewTweetActivity extends Activity implements OnClickListener, TextW
 	private AccountManager manager;
 	private Account account;
 	
+	private String username;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -39,6 +41,13 @@ public class NewTweetActivity extends Activity implements OnClickListener, TextW
 		setContentView(R.layout.post_tweet);
 		
 		initializeUI();
+		
+		username = getIntent().getStringExtra(Constants.USERNAME);
+		
+		if(username != null) {
+			newTweetTextField.setText("@" + username + " ");
+			newTweetTextField.setSelection(newTweetTextField.getText().length());
+		}
 		
 	}
 
