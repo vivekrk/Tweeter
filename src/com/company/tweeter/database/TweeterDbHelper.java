@@ -3,7 +3,6 @@ package com.company.tweeter.database;
 import java.util.Date;
 
 import twitter4j.Status;
-import twitter4j.util.TimeSpanConverter;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -21,12 +20,10 @@ public class TweeterDbHelper extends SQLiteOpenHelper {
 	
 	public TweeterDbHelper(Context context) {
 		super(context, Constants.DATABASE_NAME, null, Constants.DB_VERSION);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		// TODO Auto-generated method stub
 		db.execSQL(CREATE_DATABASE);
 	}
 
@@ -34,6 +31,10 @@ public class TweeterDbHelper extends SQLiteOpenHelper {
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		db.execSQL("DROP TABLE IF EXISTS twitterdata");
 		onCreate(db);
+	}
+	
+	public void eraseDb(SQLiteDatabase db) {
+		db.execSQL("DROP TABLE IF EXISTS twitterdata");
 	}
 	
 	public Cursor query(String tableName, String[] projection, String selection) {

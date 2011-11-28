@@ -1,14 +1,24 @@
 package com.company.tweeter;
 
+import twitter4j.TwitterException;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class TweetDetailsActivity extends Activity {
+import com.company.tweeter.accountmanager.Account;
+import com.company.tweeter.accountmanager.AccountManager;
+import com.company.tweeter.accountmanager.TwitterAccount;
+
+public class TweetDetailsActivity extends Activity implements OnClickListener {
 	
 	private TextView friendScreenname;
 	private TextView tweetMessage;
@@ -16,7 +26,15 @@ public class TweetDetailsActivity extends Activity {
 	
 	private ImageView friendProfileImage;
 	
+	private ImageButton reply;
+	private ImageButton retweet;
+	
+	private AccountManager accountManager;
+	private Account account;
+	
 	private CacheManager manager;
+	
+	private long statusID;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -26,17 +44,31 @@ public class TweetDetailsActivity extends Activity {
 		
 		manager = CacheManager.getInstance();
 		
+		accountManager = AccountManager.getInstance();
+		account = accountManager.getAccount();
+		
 		friendScreenname = (TextView) findViewById(R.id.friendScreenName);
 		tweetMessage = (TextView) findViewById(R.id.statusMessage);
 		createdAt = (TextView) findViewById(R.id.statusTime);
 		
 		friendProfileImage = (ImageView) findViewById(R.id.friendProfileImage);
 		
+		reply = (ImageButton) findViewById(R.id.reply);
+		reply.setOnClickListener(this);
+		
+		retweet = (ImageButton) findViewById(R.id.retweet);
+		retweet.setOnClickListener(this);
+		
 		setStatusInfo(getIntent());
 	}
 	//Set the Status related details
 	private void setStatusInfo(Intent intent) {
 		Bundle data = intent.getExtras();
+		
+		statusID = Long.parseLong(data.getString(Constants.STATUS_ID));
+		
+		Toast.makeText(getApplicationContext(), Long.toString(statusID), Toast.LENGTH_LONG).show();
+		
 		friendScreenname.setText(data.getString(Constants.USERNAME));
 		tweetMessage.setText(data.getString(Constants.TWEET));
 		createdAt.setText(data.getString(Constants.CREATED_TIME));
@@ -46,5 +78,40 @@ public class TweetDetailsActivity extends Activity {
 			friendProfileImage.setImageBitmap(ImageHelper.getRoundedCornerBitmap(image));
 		}
 		
+	}
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.reply:
+			Toast.makeText(getApplicationContext(), "Reply clicked", Toast.LENGTH_LONG).show();
+			break;
+			
+		case R.id.retweet:
+			if(account instanceof TwitterAccount) {
+				new RetweetStatus().execute(statusID);
+			}
+			break;
+
+		default:
+			break;
+		}
+	}
+	
+	class RetweetStatus extends AsyncTask<Long, Integer, Void> {
+
+		@Override
+		protected Void doInBackground(Long... params) {
+			try {
+				((TwitterAccount)account).retweetStatus(params[0]);
+			} catch (TwitterException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
+		}
+		
+		@Override
+		protected void onPostExecute(Void result) {
+			super.onPostExecute(result);
+		}
 	}
 }

@@ -139,6 +139,17 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 		return convertView;
 	}
 	
+	@Override
+	public Object getItem(int position) {
+		String statusID = null;
+		
+		if(data.moveToPosition(position)) {
+			statusID = data.getString(data.getColumnIndex(Constants.STATUS_ID));
+		}
+		
+		return statusID;
+	}
+	
 	private Bitmap getImageBitmapFromPath(String imagePath) {
 		return BitmapFactory.decodeFile(imagePath);
 	}

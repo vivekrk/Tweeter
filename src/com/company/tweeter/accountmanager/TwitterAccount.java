@@ -251,7 +251,7 @@ public class TwitterAccount extends Account implements TimelineMethods, DirectMe
 
 	public Status retweetStatus(long statusId) throws TwitterException {
 		// TODO Auto-generated method stub
-		return null;
+		return twitter.retweetStatus((long)statusId);
 	}
 
 	public ResponseList<Status> getRetweets(long statusId)

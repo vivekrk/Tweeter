@@ -391,8 +391,10 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 
 	public void onItemClick(AdapterView<?> view, View v, int position, long id) {
 		Intent intent = new Intent(getApplicationContext(), TweetDetailsActivity.class);
+		String statusID = (String) timelineList.getAdapter().getItem(position);
 		
 		Bundle extras = new Bundle();
+		extras.putString(Constants.STATUS_ID, statusID);
 		extras.putString(Constants.USERNAME, ((TextView) v.findViewById(R.id.username)).getText().toString());
 		extras.putString(Constants.TWEET, ((TextView) v.findViewById(R.id.tweetMessage)).getText().toString());
 		extras.putString(Constants.CREATED_TIME, ((TextView) v.findViewById(R.id.time)).getText().toString());
