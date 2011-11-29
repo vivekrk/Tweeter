@@ -82,6 +82,8 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
         dbHelper = new TweeterDbHelper(this);
         dbHelper.getWritableDatabase();
         
+        dbHelper.eraseDb();
+        
         account = AccountManager.getInstance().getAccount();
         
         newPages = new Paging(1);

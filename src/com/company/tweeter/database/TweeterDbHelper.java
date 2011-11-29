@@ -34,8 +34,8 @@ public class TweeterDbHelper extends SQLiteOpenHelper {
 		onCreate(db);
 	}
 	
-	public void eraseDb(SQLiteDatabase db) {
-		db.execSQL("DROP TABLE IF EXISTS twitterdata");
+	public void eraseDb() {
+		getWritableDatabase().execSQL("DELETE FROM twitterdata");
 	}
 	
 	public Cursor query(String tableName, String[] projection, String selection) {
