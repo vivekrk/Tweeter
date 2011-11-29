@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.company.tweeter.Constants;
 
@@ -45,12 +46,22 @@ public class TweeterDbHelper extends SQLiteOpenHelper {
 	}
 	
 	public void addStatus(Status status, int timelineType) {
+		long statusID = status.getId();
+		
 		Date createdDate = status.getCreatedAt();
 		String username = status.getUser().getScreenName();
 		String imageUrl = status.getUser().getProfileImageURL().toString();
 		String tweet = status.getText();
-		String reTweetedBy = status.getInReplyToScreenName();
-		long statusID = status.getId();
+		String reTweetedBy = null;
+		
+		if(status.isRetweet()) {
+			Log.d(Constants.TAG, status.getText());
+			Status retweetedStatus = status.getRetweetedStatus();
+			username = retweetedStatus.getUser().getScreenName();
+			imageUrl = retweetedStatus.getUser().getProfileImageURL().toString();
+			tweet = retweetedStatus.getText();
+			reTweetedBy = status.getUser().getScreenName();
+		}
 		
 		SQLiteDatabase db = getWritableDatabase();
 		ContentValues cv = new ContentValues();

@@ -92,6 +92,15 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 			holder.tweetMessage.setText(data.getString(data.getColumnIndex(Constants.TWEET)));
 			holder.retweetedBy.setText(data.getString(data.getColumnIndex(Constants.RETWEETED_BY)));
 			
+			if(holder.retweetedBy.getText().length() == 0) {
+				Log.d(Constants.TAG, "retweetedby is empty");
+				holder.retweetedBy.setVisibility(View.GONE);
+			}
+			else {
+				Log.d(Constants.TAG, "retweetedby is NOT empty");
+				holder.retweetedBy.setVisibility(View.VISIBLE);
+			}
+			
 			String imagePath = cacheManager.getImageForKey(usernameString);
 			
 			if(imagePath == null) {

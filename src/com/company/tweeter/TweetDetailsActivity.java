@@ -1,7 +1,6 @@
 package com.company.tweeter;
 
 import twitter4j.TwitterException;
-import twitter4j.User;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
