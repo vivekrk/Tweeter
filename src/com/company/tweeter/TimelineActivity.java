@@ -38,7 +38,6 @@ import com.markupartist.android.widget.PullToRefreshListView.OnRefreshListener;
 public class TimelineActivity extends Activity implements OnScrollListener, OnClickListener, OnItemClickListener {
 	/** Called when the activity is first created. */
 
-	private AccountManager manager;
 	private Account account;
 	
 	private TweeterDbHelper dbHelper;
@@ -72,8 +71,7 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
         dbHelper = new TweeterDbHelper(this);
         dbHelper.getWritableDatabase();
         
-        manager = AccountManager.getInstance();
-        account = manager.getAccount();
+        account = AccountManager.getInstance().getAccount();
         
         newPages = new Paging(1);
         
@@ -401,7 +399,6 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 		extras.putString(Constants.CREATED_TIME, ((TextView) v.findViewById(R.id.time)).getText().toString());
 		
 		intent.putExtras(extras);
-		
 		
 		startActivity(intent);
 	}

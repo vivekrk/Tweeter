@@ -20,6 +20,7 @@ import com.company.tweeter.accountmanager.TwitterAccount;
 
 public class TweetDetailsActivity extends Activity implements OnClickListener {
 	
+	private TextView friendName;
 	private TextView friendScreenname;
 	private TextView tweetMessage;
 	private TextView createdAt;
@@ -30,7 +31,6 @@ public class TweetDetailsActivity extends Activity implements OnClickListener {
 	private ImageButton reply;
 	private ImageButton retweet;
 	
-	private AccountManager accountManager;
 	private Account account;
 	
 	private CacheManager manager;
@@ -45,9 +45,9 @@ public class TweetDetailsActivity extends Activity implements OnClickListener {
 		
 		manager = CacheManager.getInstance();
 		
-		accountManager = AccountManager.getInstance();
-		account = accountManager.getAccount();
+		account = AccountManager.getInstance().getAccount();
 		
+		friendName = (TextView) findViewById(R.id.friendName);
 		friendScreenname = (TextView) findViewById(R.id.friendScreenName);
 		tweetMessage = (TextView) findViewById(R.id.statusMessage);
 		createdAt = (TextView) findViewById(R.id.statusTime);
