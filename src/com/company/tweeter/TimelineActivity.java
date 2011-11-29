@@ -57,6 +57,17 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 	private ImageButton showMentions;
 	private ImageButton newTweet;
 	
+	private int lastItemIndex;
+	
+	public int getLastItemIndex() {
+		return lastItemIndex;
+	}
+
+	public void setLastItemIndex(int lastItemIndex) {
+		this.lastItemIndex = lastItemIndex;
+	}
+
+
 	private boolean isScrolling = false;
 	private Paging newPages;
 	
@@ -200,6 +211,7 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 				data.requery();
 				if(!isScrolling()) {
 					adapter.notifyDataSetChanged();
+					timelineList.setSelection(getLastItemIndex());
 				}
 				
 			}
@@ -291,6 +303,7 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 
 	public void onScroll(AbsListView view, int firstVisibleItem,
 			int visibleItemCount, int totalItemCount) {
+		setLastItemIndex(totalItemCount - 1);
 		boolean loadMore = firstVisibleItem + visibleItemCount >= totalItemCount;
 		if(loadMore && !isFetchingData ) {
 			Log.d(Constants.TAG, "Loading more tweets");
