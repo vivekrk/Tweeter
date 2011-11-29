@@ -14,6 +14,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.webkit.WebView;
@@ -56,6 +57,8 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 	private ImageButton showTweets;
 	private ImageButton showMentions;
 	private ImageButton newTweet;
+	
+	private View loading;
 	
 	private int lastItemIndex;
 	
@@ -236,6 +239,8 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 			isFetchingData = false;
 			Log.d(Constants.TAG, "Fetching new statuses");
 			
+			timelineList.removeFooterView(loading);
+			
 			((PullToRefreshListView) timelineList).onRefreshComplete();
 			super.onPostExecute(result);
 		}
@@ -306,17 +311,28 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 
 	public void onScroll(AbsListView view, int firstVisibleItem,
 			int visibleItemCount, int totalItemCount) {
-		setLastItemIndex(firstVisibleItem + 1);
+		
 		boolean loadMore = firstVisibleItem + visibleItemCount >= totalItemCount;
 		if(loadMore && !isFetchingData ) {
 			Log.d(Constants.TAG, "Loading more tweets");
 			isFetchingData = true;
 			Paging oldPages = new Paging(lastPageFetched);
 			new GetStatuses().execute(oldPages);
+			
+			showLoadingAnimation();
+			
 			Log.d(Constants.TAG, "Fetching page number: " + lastPageFetched);
 			lastPageFetched = lastPageFetched + 1;
+			setLastItemIndex(firstVisibleItem + 1);
 		}
 		
+	}
+
+	private void showLoadingAnimation() {
+		LayoutInflater inflater = getLayoutInflater();
+		loading = inflater.inflate(R.layout.loading_tweets, null);
+		
+		timelineList.addFooterView(loading);
 	}
 
 	public void onScrollStateChanged(AbsListView view, int scrollState) {
