@@ -20,8 +20,9 @@ public final class R {
         public static final int icon=0x7f020002;
         public static final int mentions_selected=0x7f020003;
         public static final int pull_to_refresh_header_background=0x7f020004;
-        public static final int tweet_button_selected=0x7f020005;
-        public static final int tweet_button_unselected=0x7f020006;
+        public static final int retweet_icon=0x7f020005;
+        public static final int tweet_button_selected=0x7f020006;
+        public static final int tweet_button_unselected=0x7f020007;
     }
     public static final class id {
         public static final int favourite=0x7f060018;
@@ -44,7 +45,8 @@ public final class R {
         public static final int pull_to_refresh_updated_at=0x7f06000d;
         public static final int reply=0x7f060016;
         public static final int retweet=0x7f060017;
-        public static final int retweetedBy=0x7f060026;
+        public static final int retweetImageView=0x7f060026;
+        public static final int retweetedBy=0x7f060027;
         public static final int searchButton=0x7f06001c;
         public static final int share=0x7f060019;
         public static final int showDirectMessages=0x7f06001f;

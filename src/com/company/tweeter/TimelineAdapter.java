@@ -45,6 +45,8 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 		TextView tweetMessage;
 		TextView retweetedBy;
 		
+		ImageView retweetImageView;
+		
 		ImageView userProfileImageView;
 	}
 	
@@ -64,6 +66,7 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 			holder.tweetMessage = (TextView) convertView.findViewById(R.id.tweetMessage);
 			holder.retweetedBy = (TextView) convertView.findViewById(R.id.retweetedBy);
 			holder.userProfileImageView = (ImageView) convertView.findViewById(R.id.userImageView);
+			holder.retweetImageView = (ImageView) convertView.findViewById(R.id.retweetImageView);
 			
 			convertView.setTag(holder);
 		}
@@ -94,10 +97,12 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 			
 			if(holder.retweetedBy.getText().length() == 0) {
 //				Log.d(Constants.TAG, "retweetedby is empty");
+				holder.retweetImageView.setVisibility(View.GONE);
 				holder.retweetedBy.setVisibility(View.GONE);
 			}
 			else {
 //				Log.d(Constants.TAG, "retweetedby is NOT empty");
+				holder.retweetImageView.setVisibility(View.VISIBLE);
 				holder.retweetedBy.setVisibility(View.VISIBLE);
 			}
 			

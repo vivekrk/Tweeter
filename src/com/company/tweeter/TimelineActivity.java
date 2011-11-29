@@ -82,7 +82,7 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
         dbHelper = new TweeterDbHelper(this);
         dbHelper.getWritableDatabase();
         
-        dbHelper.eraseDb();
+//        dbHelper.eraseDb();
         
         account = AccountManager.getInstance().getAccount();
         
@@ -188,7 +188,7 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 			if(account instanceof TwitterAccount) {
 				try {
 					isFetchingData = true;
-					Log.d(Constants.TAG, "Inside GetTimelineStatus AsyncTask");
+					Log.d(Constants.TAG, "Inside GetStatuses AsyncTask");
 						newStatuses = ((TwitterAccount) account).getHomeTimeline(params[0]);
 						newMentions = ((TwitterAccount) account).getMentions(params[0]);
 					for (twitter4j.Status status : newStatuses) {
@@ -214,6 +214,7 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 				if(!isScrolling()) {
 					adapter.notifyDataSetChanged();
 					timelineList.setSelection(getLastItemIndex());
+					Log.d(Constants.TAG, "Last index: " + getLastItemIndex());
 				}
 				
 			}
@@ -305,7 +306,7 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 
 	public void onScroll(AbsListView view, int firstVisibleItem,
 			int visibleItemCount, int totalItemCount) {
-		setLastItemIndex(totalItemCount - 1);
+		setLastItemIndex(firstVisibleItem + 1);
 		boolean loadMore = firstVisibleItem + visibleItemCount >= totalItemCount;
 		if(loadMore && !isFetchingData ) {
 			Log.d(Constants.TAG, "Loading more tweets");
