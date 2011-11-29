@@ -394,6 +394,7 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 		String statusID = (String) timelineList.getAdapter().getItem(position);
 		
 		Bundle extras = new Bundle();
+		extras.putString(Constants.RETWEETED_BY, ((TextView) v.findViewById(R.id.retweetedBy)).getText().toString());
 		extras.putString(Constants.STATUS_ID, statusID);
 		extras.putString(Constants.USERNAME, ((TextView) v.findViewById(R.id.username)).getText().toString());
 		extras.putString(Constants.TWEET, ((TextView) v.findViewById(R.id.tweetMessage)).getText().toString());

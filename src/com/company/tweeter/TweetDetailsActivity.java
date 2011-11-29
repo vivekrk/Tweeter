@@ -23,6 +23,7 @@ public class TweetDetailsActivity extends Activity implements OnClickListener {
 	private TextView friendScreenname;
 	private TextView tweetMessage;
 	private TextView createdAt;
+	private TextView retweetedBy;
 	
 	private ImageView friendProfileImage;
 	
@@ -50,6 +51,7 @@ public class TweetDetailsActivity extends Activity implements OnClickListener {
 		friendScreenname = (TextView) findViewById(R.id.friendScreenName);
 		tweetMessage = (TextView) findViewById(R.id.statusMessage);
 		createdAt = (TextView) findViewById(R.id.statusTime);
+		retweetedBy = (TextView) findViewById(R.id.statusRetweetedBy);
 		
 		friendProfileImage = (ImageView) findViewById(R.id.friendProfileImage);
 		
@@ -67,8 +69,14 @@ public class TweetDetailsActivity extends Activity implements OnClickListener {
 		
 		statusID = Long.parseLong(data.getString(Constants.STATUS_ID));
 		
-		Toast.makeText(getApplicationContext(), Long.toString(statusID), Toast.LENGTH_LONG).show();
-		
+//		Toast.makeText(getApplicationContext(), Long.toString(statusID), Toast.LENGTH_LONG).show();
+		retweetedBy.setText("Retweeted by " + data.getString(Constants.RETWEETED_BY));
+		if(data.getString(Constants.RETWEETED_BY).length() <= 0) {
+			retweetedBy.setVisibility(View.GONE);
+		}
+		else {
+			retweetedBy.setVisibility(View.VISIBLE);
+		}
 		friendScreenname.setText(data.getString(Constants.USERNAME));
 		tweetMessage.setText(data.getString(Constants.TWEET));
 		createdAt.setText(data.getString(Constants.CREATED_TIME));

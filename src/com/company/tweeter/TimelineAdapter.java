@@ -93,11 +93,11 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 			holder.retweetedBy.setText(data.getString(data.getColumnIndex(Constants.RETWEETED_BY)));
 			
 			if(holder.retweetedBy.getText().length() == 0) {
-				Log.d(Constants.TAG, "retweetedby is empty");
+//				Log.d(Constants.TAG, "retweetedby is empty");
 				holder.retweetedBy.setVisibility(View.GONE);
 			}
 			else {
-				Log.d(Constants.TAG, "retweetedby is NOT empty");
+//				Log.d(Constants.TAG, "retweetedby is NOT empty");
 				holder.retweetedBy.setVisibility(View.VISIBLE);
 			}
 			
