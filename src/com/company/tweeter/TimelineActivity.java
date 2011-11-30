@@ -216,7 +216,7 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 				data.requery();
 				if(!isScrolling()) {
 					adapter.notifyDataSetChanged();
-					timelineList.setSelection(getLastItemIndex());
+					timelineList.smoothScrollToPosition(getLastItemIndex());
 					Log.d(Constants.TAG, "Last index: " + getLastItemIndex());
 				}
 				

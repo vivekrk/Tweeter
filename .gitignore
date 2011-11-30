@@ -120,3 +120,5 @@ project.properties
 bin/classes/com/company/tweeter/TimelineActivity$PollForData.class
 
 bin/classes/com/company/tweeter/TimelineActivity$GetStatuses.class
+
+bin/classes/com/company/tweeter/TweetDetailsActivity$RetweetStatus.class
