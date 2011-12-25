@@ -1,36 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:weightSum="4" >
+    android:layout_height="wrap_content" >
 
-    <ImageButton
-        android:id="@+id/showTweets"
-        android:layout_width="wrap_content"
+    <RadioGroup
+        android:id="@+id/twitter_actions"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:layout_weight="1"
-        android:src="@drawable/tweets_button" />
+        android:gravity="center_horizontal"
+        android:orientation="horizontal" >
 
-    <ImageButton
-        android:id="@+id/showMentions"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:src="@drawable/mentions_selected" />
+        <RadioButton
+            android:id="@+id/showTweets"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:background="@drawable/tweets_button"
+            android:button="@android:color/transparent" />
 
-    <ImageButton
-        android:id="@+id/showDirectMessages"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:src="@drawable/ic_launcher" />
+        <RadioButton
+            android:id="@+id/showMentions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:background="@drawable/mentions_button"
+            android:button="@android:color/transparent" />
 
-    <ImageButton
-        android:id="@+id/showList"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:src="@drawable/ic_launcher" />
+        <RadioButton
+            android:id="@+id/showLists"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp" />
+
+        <RadioButton
+            android:id="@+id/showTags"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp" />
+    </RadioGroup>
 
 </LinearLayout>
