@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:paddingLeft="4dp"
+    android:paddingRight="4dp"
+    android:layout_height="wrap_content" >
+
+    <ImageView
+        android:id="@+id/tweeterImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:src="@drawable/twitter_logo" />
+
+    <ImageButton
+        android:id="@+id/newStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:background="@android:color/transparent"
+        android:src="@drawable/twitter_bird" />
+
+    <ImageButton
+        android:id="@+id/searchButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/newStatus"
+        android:background="@android:color/transparent"
+        android:src="@drawable/search" />
+
+</RelativeLayout>

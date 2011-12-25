@@ -4,72 +4,19 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <RelativeLayout
+    <include
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        layout="@layout/tweet_bar" />
 
-        <ImageView
-            android:id="@+id/tweeterImage"
-            android:layout_alignParentLeft="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_launcher" />
-        
-        <ImageButton
-            android:id="@+id/newStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:src="@drawable/ic_launcher" />
-        
-        <ImageButton
-            android:id="@+id/searchButton"
-            android:layout_toLeftOf="@id/newStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_launcher" />
-
-    </RelativeLayout>
-
-    <LinearLayout
-        android:weightSum="4"
+    <include
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-        <ImageButton
-            android:id="@+id/showTweets"
-            android:layout_weight="1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/tweet_button_selected" />
-
-        <ImageButton
-            android:id="@+id/showMentions"
-            android:layout_weight="1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/mentions_selected" />
-
-        <ImageButton
-            android:id="@+id/showDirectMessages"
-            android:layout_weight="1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_launcher" />
-
-        <ImageButton
-            android:id="@+id/showList"
-            android:layout_weight="1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_launcher" />
-
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        layout="@layout/tweet_actions" />
 
     <com.markupartist.android.widget.PullToRefreshListView
         android:id="@+id/tweetList"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-    />
+        android:layout_height="wrap_content" />
 
 </LinearLayout>
