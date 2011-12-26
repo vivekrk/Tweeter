@@ -103,11 +103,19 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 			initializeUI();
 
 			updateTimelineUI(TwitterAccount.TIMELINE);
-			//        	new GetStatuses().execute(newPages);
-			new PollForData().execute();
+			if (ImageDownloader.isNetworkConnected(getApplicationContext())) {
+				//        	new GetStatuses().execute(newPages);
+				new PollForData().execute();
+			} else {
+				Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_SHORT).show();
+			}
 		} else {
 			try {
-				login();
+				if (ImageDownloader.isNetworkConnected(getApplicationContext())) {
+					login();
+				} else {
+					Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_SHORT).show();
+				}
 			} catch (TwitterException e) {
 				Log.d(Constants.TAG, "Login failed");
 			}
