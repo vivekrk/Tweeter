@@ -18,11 +18,21 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
         public static final int ic_pulltorefresh_arrow=0x7f020001;
         public static final int icon=0x7f020002;
-        public static final int mentions_selected=0x7f020003;
-        public static final int pull_to_refresh_header_background=0x7f020004;
-        public static final int retweet_icon=0x7f020005;
-        public static final int tweet_button_selected=0x7f020006;
-        public static final int tweet_button_unselected=0x7f020007;
+        public static final int jeans_back_texture=0x7f020003;
+        public static final int mention_icon_normal=0x7f020004;
+        public static final int mention_icon_selected=0x7f020005;
+        public static final int mentions_button=0x7f020006;
+        public static final int mentions_selected=0x7f020007;
+        public static final int pull_to_refresh_header_background=0x7f020008;
+        public static final int retweet_icon=0x7f020009;
+        public static final int search=0x7f02000a;
+        public static final int tweet_button_selected=0x7f02000b;
+        public static final int tweet_button_unselected=0x7f02000c;
+        public static final int tweets_button=0x7f02000d;
+        public static final int tweets_icon_normal=0x7f02000e;
+        public static final int tweets_icon_selected=0x7f02000f;
+        public static final int twitter_bird=0x7f020010;
+        public static final int twitter_logo=0x7f020011;
     }
     public static final class id {
         public static final int favourite=0x7f060019;
@@ -35,7 +45,7 @@ public final class R {
         public static final int letterCount=0x7f060004;
         public static final int loading=0x7f060000;
         public static final int mention=0x7f060006;
-        public static final int newStatus=0x7f06001c;
+        public static final int newStatus=0x7f060022;
         public static final int newTweetButton=0x7f060003;
         public static final int newTweetImage=0x7f060002;
         public static final int newTweetTextField=0x7f060005;
@@ -46,26 +56,27 @@ public final class R {
         public static final int pull_to_refresh_updated_at=0x7f06000e;
         public static final int reply=0x7f060017;
         public static final int retweet=0x7f060018;
-        public static final int retweetImageView=0x7f060027;
-        public static final int retweetedBy=0x7f060028;
-        public static final int searchButton=0x7f06001d;
+        public static final int retweetImageView=0x7f060028;
+        public static final int retweetedBy=0x7f060029;
+        public static final int searchButton=0x7f060023;
         public static final int share=0x7f06001a;
-        public static final int showDirectMessages=0x7f060020;
-        public static final int showList=0x7f060021;
-        public static final int showMentions=0x7f06001f;
-        public static final int showTweets=0x7f06001e;
+        public static final int showLists=0x7f06001f;
+        public static final int showMentions=0x7f06001e;
+        public static final int showTags=0x7f060020;
+        public static final int showTweets=0x7f06001d;
         public static final int snapPic=0x7f060007;
         public static final int statusDetails=0x7f060013;
         public static final int statusMessage=0x7f060014;
         public static final int statusRetweetedBy=0x7f060016;
         public static final int statusTime=0x7f060015;
-        public static final int time=0x7f060025;
-        public static final int tweetList=0x7f060022;
-        public static final int tweetMessage=0x7f060026;
-        public static final int tweeterImage=0x7f06001b;
+        public static final int time=0x7f060026;
+        public static final int tweetList=0x7f06001b;
+        public static final int tweetMessage=0x7f060027;
+        public static final int tweeterImage=0x7f060021;
+        public static final int twitter_actions=0x7f06001c;
         public static final int uploadPic=0x7f060008;
-        public static final int userImageView=0x7f060023;
-        public static final int username=0x7f060024;
+        public static final int userImageView=0x7f060024;
+        public static final int username=0x7f060025;
     }
     public static final class layout {
         public static final int loading_tweets=0x7f030000;
@@ -73,7 +84,9 @@ public final class R {
         public static final int pull_to_refresh_header=0x7f030002;
         public static final int show_tweet_layout=0x7f030003;
         public static final int timeline_layout=0x7f030004;
-        public static final int tweet_row=0x7f030005;
+        public static final int tweet_actions=0x7f030005;
+        public static final int tweet_bar=0x7f030006;
+        public static final int tweet_row=0x7f030007;
     }
     public static final class string {
         public static final int app_name=0x7f050000;

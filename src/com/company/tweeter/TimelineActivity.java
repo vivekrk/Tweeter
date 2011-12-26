@@ -23,6 +23,7 @@ import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
@@ -54,6 +55,8 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 	private boolean isFetchingData = false;
 
 	private ListView timelineList;
+	
+	private ImageButton newTweet;
 
 	private RadioGroup twitterActions;
 
@@ -153,6 +156,8 @@ public class TimelineActivity extends Activity implements OnScrollListener, OnCl
 
 	private void initializeUI() {
 		timelineList = (PullToRefreshListView) findViewById(R.id.tweetList);
+		newTweet = (ImageButton) findViewById(R.id.newStatus);
+		newTweet.setOnClickListener(this);
 
 		twitterActions = (RadioGroup) findViewById(R.id.twitter_actions);
 		twitterActions.setOnCheckedChangeListener(new OnCheckedChangeListener() {
