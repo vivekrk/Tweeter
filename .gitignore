@@ -143,3 +143,15 @@ bin/res/drawable-hdpi/twitter_logo.png
 gen/com/company/tweeter/R.java
 
 gen/com/company/tweeter/R.java
+
+bin/classes/com/company/tweeter/TweetDetailsActivity.class
+
+bin/res/drawable-hdpi/retweet_icon.png
+
+bin/res/drawable-hdpi/search.png
+
+bin/res/drawable-hdpi/tweets_icon_normal.png
+
+bin/res/drawable-hdpi/tweets_icon_selected.png
+
+bin/res/drawable-hdpi/twitter_bird.png
