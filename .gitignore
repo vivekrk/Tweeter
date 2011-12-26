@@ -1,5 +1,6 @@
-
 bin/resources.ap_
+
+bin/*
 
 bin/res/drawable-mdpi/ic_launcher.png
 
@@ -64,6 +65,8 @@ bin/classes/com/markupartist/android/widget/pulltorefresh/R$attr.class
 bin/classes/com/company/tweeter/ImageHelper.class
 
 gen/com/markupartist/android/widget/pulltorefresh/R.java
+
+gen/*
 
 bin/classes/com/company/tweeter/TimelineAdapter$1.class
 
