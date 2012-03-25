@@ -1,5 +1,8 @@
 package com.company.tweeter;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 
@@ -18,14 +21,15 @@ import android.widget.TextView;
 
 import com.company.tweeter.ImageDownloader.OnDownloadCompletedListener;
 
-public class TimelineAdapter extends SimpleCursorAdapter {
+public class TimelineAdapter extends SimpleCursorAdapter implements OnDownloadCompletedListener {
 
+	private static final String DATE_FORMAT_PATTERN = "EEE MMM dd HH:mm:ss zzz yyyy";
 	private Activity activity;
 	private Cursor data;
 	
 	private CacheManager cacheManager;
 	
-	private Hashtable<String, String> imageUrlHastable;
+	private ArrayList<String> nowDownloading;
 	
 	public TimelineAdapter(Activity activity, int layout, Cursor c,
 			String[] from, int[] to) {
@@ -35,8 +39,8 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 		this.data = c;
 		
 		cacheManager = CacheManager.getInstance();
-		imageUrlHastable = new Hashtable<String, String>();
 		
+		nowDownloading = new ArrayList<String>();
 	}
 	
 	static class ViewHolder {
@@ -50,10 +54,23 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 		ImageView userProfileImageView;
 	}
 	
+	private boolean isDownloading(String username) {
+		synchronized (nowDownloading) {
+			for (String object : nowDownloading) {
+				if(object.compareTo(username) == 0) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		ViewHolder holder;
+		
+		Hashtable<String, String> imageUrlHastable = new Hashtable<String, String>();
 		
 		if(convertView == null) {
 			LayoutInflater inflater = activity.getLayoutInflater();
@@ -79,18 +96,27 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 			String usernameString = data.getString(data.getColumnIndex(Constants.USERNAME));
 			String imageUrl = data.getString(data.getColumnIndex(Constants.PROFILE_IMAGE));
 			
-			if(!imageUrlHastable.contains(usernameString) && cacheManager.getImageForKey(usernameString) == null) {
+			if(!isDownloading(usernameString) && cacheManager.getImageForKey(usernameString) == null) {
 				imageUrlHastable.put(usernameString, imageUrl);
+				Log.i(Constants.TAG, "Inside if condition");
 			}
 			
 			holder.username.setText(usernameString);
 			
 			String dateString = data.getString(data.getColumnIndex(Constants.CREATED_TIME));
-			long date = Date.parse(dateString);
+			Log.i(Constants.TAG, dateString);
+			
+			SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT_PATTERN);
+			Date dateObject = null;
+			try {
+				dateObject = format.parse(dateString);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
 			
 			TimeSpanConverter convertor = new TimeSpanConverter();
 			
-			holder.time.setText(convertor.toTimeSpanString(date));
+			holder.time.setText(convertor.toTimeSpanString(dateObject));
 			
 			holder.tweetMessage.setText(data.getString(data.getColumnIndex(Constants.TWEET)));
 			holder.retweetedBy.setText(data.getString(data.getColumnIndex(Constants.RETWEETED_BY)));
@@ -110,22 +136,13 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 			
 			if(imagePath == null) {
 				holder.userProfileImageView.setImageResource(R.drawable.ic_launcher);
-//				Log.d(Constants.TAG, "Now downloading image for..." + usernameString);
-//				Log.d(Constants.TAG, "###########");
-				
 				if(ImageDownloader.isNetworkConnected(activity)) {
 					ImageDownloader downloader = new ImageDownloader();
 					downloader.setContext(activity);
-					downloader.setOnDownloadCompletedListener(new OnDownloadCompletedListener() {
-						
-						public void onDownloadCompleted() {
-							if(activity instanceof TimelineActivity) {
-								if(!((TimelineActivity) activity).isScrolling()) {
-									notifyDataSetChanged();
-								}
-							}
-						}
-					});
+					downloader.setOnDownloadCompletedListener(this);
+					synchronized (nowDownloading) {
+						nowDownloading.add(usernameString);
+					}
 					downloader.execute(imageUrlHastable);
 				}
 				else {
@@ -167,5 +184,17 @@ public class TimelineAdapter extends SimpleCursorAdapter {
 	private Bitmap getImageBitmapFromPath(String imagePath) {
 		return BitmapFactory.decodeFile(imagePath);
 	}
-	
+
+	public void onDownloadCompleted(String username) {
+		Log.d(Constants.TAG, "Download of image for " + username + " completed");
+		Log.d(Constants.TAG, "###########");
+		if(activity instanceof TimelineActivity) {
+			if(!((TimelineActivity) activity).isScrolling()) {
+				notifyDataSetChanged();
+			}
+		}
+		synchronized (nowDownloading) {
+			nowDownloading.remove(username);
+		}
+	}
 }

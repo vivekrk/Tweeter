@@ -25,7 +25,7 @@ import android.util.Log;
  *
  */
 
-class ImageDownloader extends AsyncTask<Hashtable<String, String>, Integer, Void> {
+class ImageDownloader extends AsyncTask<Hashtable<String, String>, Integer, String> {
 
 	private String imageSavePath;// = Environment.getDataDirectory().getAbsolutePath() + usernameString + ".png";
 	
@@ -36,7 +36,7 @@ class ImageDownloader extends AsyncTask<Hashtable<String, String>, Integer, Void
 	private OnDownloadCompletedListener onDownloadCompletedListener = null;
 
 	@Override
-	protected Void doInBackground(Hashtable<String, String>... params) {
+	protected String doInBackground(Hashtable<String, String>... params) {
 		URL imageUrl = null;
 		
 		CacheManager manager = CacheManager.getInstance();
@@ -70,12 +70,12 @@ class ImageDownloader extends AsyncTask<Hashtable<String, String>, Integer, Void
 		} catch (IOException e) {
 			e.printStackTrace();
 		} 
-		return null;
+		return usernameString;
 	}
 	
 	@Override
-	protected void onPostExecute(Void result) {
-		onDownloadCompletedListener.onDownloadCompleted();
+	protected void onPostExecute(String result) {
+		onDownloadCompletedListener.onDownloadCompleted(result);
 		super.onPostExecute(result);
 	}
 	
@@ -144,7 +144,7 @@ class ImageDownloader extends AsyncTask<Hashtable<String, String>, Integer, Void
 	}
 	
 	public interface OnDownloadCompletedListener {
-		public abstract void onDownloadCompleted();
+		public abstract void onDownloadCompleted(String username);
 	}
 	
 }
