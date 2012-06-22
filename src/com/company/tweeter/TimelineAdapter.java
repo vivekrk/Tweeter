@@ -29,6 +29,8 @@ public class TimelineAdapter extends SimpleCursorAdapter implements OnDownloadCo
 	
 	private CacheManager cacheManager;
 	
+	private Hashtable<String, String> imageUrlHastable;
+	
 	private ArrayList<String> nowDownloading;
 	
 	public TimelineAdapter(Activity activity, int layout, Cursor c,
@@ -70,8 +72,6 @@ public class TimelineAdapter extends SimpleCursorAdapter implements OnDownloadCo
 	public View getView(int position, View convertView, ViewGroup parent) {
 		ViewHolder holder;
 		
-		Hashtable<String, String> imageUrlHastable = new Hashtable<String, String>();
-		
 		if(convertView == null) {
 			LayoutInflater inflater = activity.getLayoutInflater();
 			convertView = inflater.inflate(R.layout.tweet_row, null);
@@ -97,6 +97,7 @@ public class TimelineAdapter extends SimpleCursorAdapter implements OnDownloadCo
 			String imageUrl = data.getString(data.getColumnIndex(Constants.PROFILE_IMAGE));
 			
 			if(!isDownloading(usernameString) && cacheManager.getImageForKey(usernameString) == null) {
+				imageUrlHastable = new Hashtable<String, String>();
 				imageUrlHastable.put(usernameString, imageUrl);
 				Log.i(Constants.TAG, "Inside if condition");
 			}
